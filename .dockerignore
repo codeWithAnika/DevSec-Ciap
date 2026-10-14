@@ -1,0 +1,24 @@
+# Ignore version control
+.git/
+.gitignore
+
+# Ignore documentation and tests from production image
+docs/
+tests/
+package.json
+package-lock.json
+
+# Ignore editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Ignore environment and secrets
+*.env
+*.env.*
+*.log
+*.pem
+*.key
+*.cert
+*.id_rsa

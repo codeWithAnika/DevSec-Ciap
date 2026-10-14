@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Online Examination System prototype demonstrating Equivalence Class and Special Value Testing for DevSecOps Lab (CO5, SDG 4).">
+  <title>Online Examination Portal | DevSecOps CIAP Microproject</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Educational Notice Banner -->
+  <aside class="notice-banner" role="complementary" aria-label="Prototype Security Notice">
+    <strong>Educational Prototype Notice:</strong> Validation and scoring are executed client-side for testing demonstration. Production examination security requires server-side validation, authentication, tamper-proof state storage, and access controls.
+  </aside>
+
+  <!-- Site Header -->
+  <header class="site-header" role="banner">
+    <div class="header-container">
+      <div class="brand-wrapper">
+        <h1 class="brand-title">DevSecOps Online Examination Portal</h1>
+        <p class="brand-subtitle">Equivalence Class &amp; Special Value Testing Prototype</p>
+      </div>
+      <div class="header-meta" aria-label="Course and Student Metadata">
+        <span class="meta-pill">Course: DevSecOps Lab</span>
+        <span class="meta-pill">CO: CO5</span>
+        <span class="meta-pill">SDG 4: Quality Education</span>
+        <span class="meta-pill">ID: 124BTCS1036</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Application Content -->
+  <main class="main-content" id="main-content" role="main">
+
+    <!-- VIEW 1: Student Registration -->
+    <section id="registration-view" class="view-panel active" aria-labelledby="registration-heading">
+      <div class="card">
+        <div class="card-header">
+          <h2 id="registration-heading" class="card-title">Student Examination Registration</h2>
+          <p class="card-description">
+            Please register your candidate details below to begin the DevSecOps and Software Testing assessment. All fields are required and validated according to strict equivalence class rules.
+          </p>
+        </div>
+
+        <form id="registration-form" novalidate aria-label="Student Registration Form">
+          <!-- Full Name Field -->
+          <div class="form-group">
+            <label for="full-name" class="form-label">
+              Full Name <span class="required-star" aria-hidden="true">*</span>
+            </label>
+            <input
+              type="text"
+              id="full-name"
+              name="fullName"
+              class="form-input"
+              placeholder="e.g. Talavadekar Anika Vinit"
+              required
+              aria-required="true"
+              aria-describedby="full-name-hint full-name-error"
+              autocomplete="name"
+            >
+            <span id="full-name-hint" class="field-hint">3 to 50 alphabetic characters. Hyphens, apostrophes, and spaces permitted.</span>
+            <span id="full-name-error" class="field-error" role="alert" aria-live="polite"></span>
+          </div>
+
+          <!-- Email Address Field -->
+          <div class="form-group">
+            <label for="email-address" class="form-label">
+              Email Address <span class="required-star" aria-hidden="true">*</span>
+            </label>
+            <input
+              type="email"
+              id="email-address"
+              name="emailAddress"
+              class="form-input"
+              placeholder="e.g. anika.talavadekar24@sakec.ac.in"
+              required
+              aria-required="true"
+              aria-describedby="email-hint email-error"
+              autocomplete="email"
+            >
+            <span id="email-hint" class="field-hint">Valid institutional or personal email address (maximum 100 characters).</span>
+            <span id="email-error" class="field-error" role="alert" aria-live="polite"></span>
+          </div>
+
+          <!-- Student ID Field -->
+          <div class="form-group">
+            <label for="student-id" class="form-label">
+              Student ID / Roll Number <span class="required-star" aria-hidden="true">*</span>
+            </label>
+            <input
+              type="text"
+              id="student-id"
+              name="studentId"
+              class="form-input"
+              placeholder="e.g. 124BTCS1036"
+              required
+              aria-required="true"
+              aria-describedby="student-id-hint student-id-error"
+              autocomplete="off"
+            >
+            <span id="student-id-hint" class="field-hint">6 to 15 alphanumeric characters without spaces or symbols.</span>
+            <span id="student-id-error" class="field-error" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <button type="submit" id="btn-start-exam" class="btn btn-primary btn-submit">
+              Proceed to Examination &rarr;
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- VIEW 2: Examination Session -->
+    <section id="exam-view" class="view-panel" aria-labelledby="exam-heading">
+      <div class="exam-top-bar">
+        <div class="student-tag">
+          Candidate: <strong id="exam-student-badge">Loading...</strong>
+        </div>
+        <div class="progress-wrapper">
+          <span id="exam-progress-text" class="progress-label">Progress: 0 of 6 answered (0%)</span>
+          <div class="progress-track" role="progressbar" id="exam-progress-bar-track" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="exam-progress-text">
+            <div id="exam-progress-bar" class="progress-bar-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alert for Missing Questions -->
+      <div id="exam-alert-banner" class="alert-banner" role="alert" aria-live="assertive"></div>
+
+      <form id="exam-form" novalidate aria-label="Multiple Choice Examination">
+        <div id="questions-container">
+          <!-- Dynamically populated question cards -->
+        </div>
+
+        <div class="card" style="margin-top: 1rem;">
+          <button type="submit" id="btn-submit-exam" class="btn btn-primary btn-submit">
+            Submit Examination Answers
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- VIEW 3: Results & Review -->
+    <section id="results-view" class="view-panel" aria-labelledby="results-heading">
+      <div class="card">
+        <div class="card-header">
+          <h2 id="results-heading" class="card-title">Examination Results &amp; Evaluation</h2>
+          <p class="card-description">
+            Your answers have been graded. Below is your score summary and comprehensive answer analysis.
+          </p>
+        </div>
+
+        <div class="result-student-info">
+          Candidate Record: <span id="result-student-badge"></span>
+        </div>
+
+        <div id="score-badge" class="score-card score-pass">
+          <div id="score-status-pill" class="status-pill status-pass">PASSED</div>
+          <div id="score-percentage" class="score-percentage">100%</div>
+          <div id="score-summary-text" class="score-summary-text">You scored 6 out of 6 questions correctly.</div>
+          <div id="time-taken-text" class="time-taken-text">Time elapsed: 45s</div>
+        </div>
+
+        <h3 style="margin-bottom: 1rem; font-size: 1.2rem; color: var(--primary-color);">
+          Question Breakdown &amp; Educational Feedback
+        </h3>
+        <div id="detailed-review-container">
+          <!-- Dynamically populated review items -->
+        </div>
+
+        <div class="btn-group" style="margin-top: 2rem;">
+          <button type="button" id="btn-retake-exam" class="btn btn-primary">
+            &#8634; Retake Examination (Same Candidate)
+          </button>
+          <button type="button" id="btn-new-student" class="btn btn-secondary">
+            + Register New Candidate
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-container">
+      <p>
+        <strong>DevSecOps Lab Microproject (CO5)</strong> &bull; Equivalence Class &amp; Special Value Testing
+      </p>
+      <p>
+        Student: <strong>Talavadekar Anika Vinit</strong> (ID: <code>124BTCS1036</code>) &bull; Alignment: <strong>UN SDG 4 (Quality Education)</strong>
+      </p>
+      <p style="margin-top: 0.5rem; font-size: 0.78rem;">
+        Static Prototype for Docker Deployment &bull; SAKEC DevSecOps Lab
+      </p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/validator.js"></script>
+  <script src="js/questions.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
