@@ -6,15 +6,32 @@
 const { describe, it, before, after } = require('node:test');
 const assert = require('node:assert/strict');
 const http = require('http');
-const server = require('../scripts/serve.js');
+const { createServer } = require('../scripts/serve.js');
 
 describe('HTTP Server & Static Asset Verification', () => {
-  const PORT = 8080;
-  const BASE_URL = `http://127.0.0.1:${PORT}`;
+  let server;
+  let baseUrl;
+
+  before((_, done) => {
+    server = createServer();
+    server.listen(0, '127.0.0.1', () => {
+      const port = server.address().port;
+      baseUrl = `http://127.0.0.1:${port}`;
+      done();
+    });
+  });
+
+  after((_, done) => {
+    if (server) {
+      server.close(done);
+    } else {
+      done();
+    }
+  });
 
   function fetchUrl(urlPath) {
     return new Promise((resolve, reject) => {
-      http.get(`${BASE_URL}${urlPath}`, (res) => {
+      http.get(`${baseUrl}${urlPath}`, (res) => {
         let data = '';
         res.on('data', chunk => data += chunk);
         res.on('end', () => {
@@ -27,10 +44,6 @@ describe('HTTP Server & Static Asset Verification', () => {
       }).on('error', reject);
     });
   }
-
-  after(() => {
-    server.close();
-  });
 
   it('Serves index.html with status 200 and text/html', async () => {
     const res = await fetchUrl('/');

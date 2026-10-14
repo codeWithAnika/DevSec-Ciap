@@ -7,7 +7,6 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = process.env.PORT || 8080;
 const PUBLIC_DIR = path.join(__dirname, '..', 'src');
 
 const MIME_TYPES = {
@@ -21,35 +20,41 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon'
 };
 
-const server = http.createServer((req, res) => {
-  let reqPath = req.url.split('?')[0];
-  if (reqPath === '/') reqPath = '/index.html';
+function createServer() {
+  return http.createServer((req, res) => {
+    let reqPath = req.url.split('?')[0];
+    if (reqPath === '/') reqPath = '/index.html';
 
-  const safePath = path.normalize(reqPath).replace(/^(\.\.[\/\\])+/, '');
-  const filePath = path.join(PUBLIC_DIR, safePath);
+    const safePath = path.normalize(reqPath).replace(/^(\.\.[\/\\])+/, '');
+    const filePath = path.join(PUBLIC_DIR, safePath);
 
-  fs.stat(filePath, (err, stats) => {
-    if (err || !stats.isFile()) {
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      res.end('404 Not Found');
-      return;
-    }
+    fs.stat(filePath, (err, stats) => {
+      if (err || !stats.isFile()) {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('404 Not Found');
+        return;
+      }
 
-    const ext = path.extname(filePath).toLowerCase();
-    const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+      const ext = path.extname(filePath).toLowerCase();
+      const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
-    res.writeHead(200, {
-      'Content-Type': contentType,
-      'Cache-Control': 'no-cache'
+      res.writeHead(200, {
+        'Content-Type': contentType,
+        'Cache-Control': 'no-cache'
+      });
+
+      fs.createReadStream(filePath).pipe(res);
     });
-
-    fs.createReadStream(filePath).pipe(res);
   });
-});
+}
 
-server.listen(PORT, '127.0.0.1', () => {
-  console.log(`Examination portal running at http://127.0.0.1:${PORT}/`);
-});
+// Auto-run when executed directly (node scripts/serve.js)
+if (require.main === module) {
+  const PORT = process.env.PORT || 8080;
+  const server = createServer();
+  server.listen(PORT, '127.0.0.1', () => {
+    console.log(`Examination portal running at http://127.0.0.1:${PORT}/`);
+  });
+}
 
-// Export server instance for programmatic tests
-module.exports = server;
+module.exports = { createServer };
