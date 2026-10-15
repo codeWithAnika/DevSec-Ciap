@@ -1,7 +1,6 @@
 /**
- * DevSecOps Online Examination System - Input Validator & Business Logic
- * Student: Talavadekar Anika Vinit (124BTCS1036)
- * Topic: Equivalence Class and Special Value Testing
+ * ExamFlow Online Examination Platform - Input Validator & Assessment Engine
+ * Core validation rules, equivalence classes, and scoring calculations
  */
 
 const Validator = {
@@ -107,9 +106,9 @@ const Validator = {
   },
 
   /**
-   * Validates Student ID
+   * Validates Candidate / Student ID
    * Equivalence classes:
-   * - Valid: 6-15 alphanumeric characters (e.g., 124BTCS1036)
+   * - Valid: 6-15 alphanumeric characters (e.g., CAND10492 or 124BTCS1036)
    * - Invalid: null/undefined, empty, whitespace only, length < 6, length > 15, contains spaces, contains special characters
    * @param {any} studentId
    * @returns {{ isValid: boolean, error: string | null, value: string }}
@@ -155,14 +154,25 @@ const Validator = {
   },
 
   /**
-   * Validates Complete Student Registration Form
-   * @param {{ name: any, email: any, studentId: any }} formData
+   * Alias for candidate ID validation
+   */
+  validateCandidateID(candidateId) {
+    return this.validateStudentID(candidateId);
+  },
+
+  /**
+   * Validates Complete Candidate Registration Form
+   * @param {{ name?: any, fullName?: any, email?: any, emailAddress?: any, studentId?: any, candidateId?: any }} formData
    * @returns {{ isValid: boolean, errors: { name: string|null, email: string|null, studentId: string|null }, values: { name: string, email: string, studentId: string } }}
    */
   validateRegistration(formData) {
-    const nameResult = this.validateFullName(formData ? formData.name : undefined);
-    const emailResult = this.validateEmail(formData ? formData.email : undefined);
-    const idResult = this.validateStudentID(formData ? formData.studentId : undefined);
+    const rawName = formData ? (formData.name !== undefined ? formData.name : formData.fullName) : undefined;
+    const rawEmail = formData ? (formData.email !== undefined ? formData.email : formData.emailAddress) : undefined;
+    const rawId = formData ? (formData.studentId !== undefined ? formData.studentId : formData.candidateId) : undefined;
+
+    const nameResult = this.validateFullName(rawName);
+    const emailResult = this.validateEmail(rawEmail);
+    const idResult = this.validateStudentID(rawId);
 
     const isValid = nameResult.isValid && emailResult.isValid && idResult.isValid;
 
@@ -200,7 +210,7 @@ const Validator = {
     const missing = [];
     for (let i = 0; i < totalQuestions; i++) {
       if (answers[i] === undefined || answers[i] === null || answers[i] === '') {
-        missing.push(i + 1); // 1-based question number for student feedback
+        missing.push(i + 1); // 1-based question number for candidate feedback
       }
     }
 

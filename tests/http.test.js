@@ -49,15 +49,15 @@ describe('HTTP Server & Static Asset Verification', () => {
     const res = await fetchUrl('/');
     assert.equal(res.statusCode, 200);
     assert.match(res.headers['content-type'], /text\/html/);
-    assert.match(res.body, /DevSecOps Online Examination Portal/);
-    assert.match(res.body, /Talavadekar Anika Vinit/);
+    assert.match(res.body, /ExamFlow/);
+    assert.match(res.body, /A smarter way to assess knowledge/);
   });
 
   it('Serves css/style.css with status 200 and text/css', async () => {
     const res = await fetchUrl('/css/style.css');
     assert.equal(res.statusCode, 200);
     assert.match(res.headers['content-type'], /text\/css/);
-    assert.match(res.body, /--primary-color/);
+    assert.match(res.body, /--color-brand-primary/);
   });
 
   it('Serves js/validator.js with status 200 and application/javascript', async () => {

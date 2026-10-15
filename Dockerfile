@@ -1,13 +1,11 @@
-# Multi-stage / Minimal Production Web Server Image
+# Minimal Production Web Server Image
 # Official Nginx Alpine Linux image pinned to a specific stable release
 FROM nginx:1.27.4-alpine
 
-# Set metadata labels for traceability and DevSecOps compliance
-LABEL maintainer="Talavadekar Anika Vinit <anika.talavadekar24@sakec.ac.in>" \
-      student.id="124BTCS1036" \
-      course="DevSecOps Lab" \
-      project="CIAP Online Examination Prototype" \
-      version="1.0.0"
+# Set metadata labels for product identification
+LABEL name="ExamFlow" \
+      version="1.1.0" \
+      description="ExamFlow Online Examination Platform"
 
 # Remove default Nginx static assets to avoid serving extraneous files
 RUN rm -rf /usr/share/nginx/html/*

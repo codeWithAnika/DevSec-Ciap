@@ -1,7 +1,6 @@
 /**
- * DevSecOps Online Examination Portal - Frontend Application Logic
- * Student: Talavadekar Anika Vinit (124BTCS1036)
- * Topic: Equivalence Class and Special Value Testing
+ * ExamFlow - Modern Online Examination Platform
+ * Frontend Application Controller & Assessment Engine
  */
 
 (function () {
@@ -10,16 +9,19 @@
   // Application State
   const state = {
     step: 'registration', // 'registration' | 'examination' | 'results'
-    student: {
+    candidate: {
       name: '',
       email: '',
-      studentId: ''
+      candidateId: ''
     },
     userAnswers: {},
     startTime: null,
     endTime: null,
     scoreResult: null
   };
+
+  // Compatibility alias
+  state.student = state.candidate;
 
   // DOM Elements Cache
   const elements = {
@@ -45,6 +47,12 @@
     examAlertBanner: document.getElementById('exam-alert-banner'),
     examForm: document.getElementById('exam-form'),
 
+    // Confirmation Modal Elements
+    confirmModal: document.getElementById('submit-confirm-modal'),
+    modalAnsweredCount: document.getElementById('modal-answered-count'),
+    btnModalCancel: document.getElementById('btn-modal-cancel'),
+    btnModalConfirm: document.getElementById('btn-modal-confirm'),
+
     // Results Elements
     resultStudentBadge: document.getElementById('result-student-badge'),
     scoreBadge: document.getElementById('score-badge'),
@@ -63,6 +71,7 @@
   function init() {
     setupRegistrationListeners();
     setupExamListeners();
+    setupModalListeners();
     setupResultsListeners();
     showView('registration');
   }
@@ -133,7 +142,7 @@
   }
 
   /**
-   * Set up event listeners for Student Registration
+   * Set up event listeners for Candidate Registration
    */
   function setupRegistrationListeners() {
     // Blur validation
@@ -186,12 +195,14 @@
         return;
       }
 
-      // Valid: store student state and proceed to exam
-      state.student = {
+      // Valid: store candidate state and proceed to exam
+      state.candidate = {
         name: validation.values.name,
         email: validation.values.email,
+        candidateId: validation.values.studentId,
         studentId: validation.values.studentId
       };
+      state.student = state.candidate;
       state.userAnswers = {};
       state.startTime = new Date();
 
@@ -203,7 +214,7 @@
    * Starts examination view and renders question list
    */
   function startExamSession() {
-    elements.examStudentBadge.textContent = `${state.student.name} (${state.student.studentId})`;
+    elements.examStudentBadge.textContent = `${state.candidate.name} (${state.candidate.candidateId})`;
     elements.examAlertBanner.classList.remove('visible');
     elements.examAlertBanner.textContent = '';
     renderQuestions();
@@ -226,7 +237,7 @@
       legend.className = 'question-header';
       legend.innerHTML = `
         <span class="question-number">Question ${qIndex + 1} of ${QuestionBank.length}</span>
-        <span class="question-point">1 Point</span>
+        <span class="question-point">Single Choice &bull; 1 Point</span>
       `;
       card.appendChild(legend);
 
@@ -259,6 +270,7 @@
 
         const customRadio = document.createElement('span');
         customRadio.className = 'custom-radio';
+        customRadio.setAttribute('aria-hidden', 'true');
 
         const textSpan = document.createElement('span');
         textSpan.className = 'option-text';
@@ -299,7 +311,7 @@
     const total = QuestionBank.length;
     const pct = Math.round((answered / total) * 100);
 
-    elements.examProgressText.textContent = `Progress: ${answered} of ${total} answered (${pct}%)`;
+    elements.examProgressText.textContent = `${answered} of ${total} answered (${pct}%)`;
     elements.examProgressBar.style.width = `${pct}%`;
     elements.examProgressBar.setAttribute('aria-valuenow', pct);
   }
@@ -338,11 +350,59 @@
         return;
       }
 
-      // Valid: Calculate score and show results
-      state.endTime = new Date();
-      state.scoreResult = Validator.calculateScore(state.userAnswers, QuestionBank);
-      displayResults();
+      // Valid: open confirmation modal before final submission
+      openConfirmModal();
     });
+  }
+
+  /**
+   * Confirmation modal dialog handlers
+   */
+  function setupModalListeners() {
+    if (!elements.confirmModal) return;
+
+    elements.btnModalCancel.addEventListener('click', closeConfirmModal);
+
+    elements.btnModalConfirm.addEventListener('click', () => {
+      closeConfirmModal();
+      submitExamFinal();
+    });
+
+    // Close on backdrop click
+    elements.confirmModal.addEventListener('click', (e) => {
+      if (e.target === elements.confirmModal) {
+        closeConfirmModal();
+      }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !elements.confirmModal.hidden) {
+        closeConfirmModal();
+      }
+    });
+  }
+
+  function openConfirmModal() {
+    const answeredCount = Object.keys(state.userAnswers).length;
+    elements.modalAnsweredCount.textContent = `${answeredCount} of ${QuestionBank.length}`;
+    elements.confirmModal.hidden = false;
+    elements.btnModalConfirm.focus();
+  }
+
+  function closeConfirmModal() {
+    elements.confirmModal.hidden = true;
+    const submitBtn = document.getElementById('btn-submit-exam');
+    if (submitBtn) submitBtn.focus();
+  }
+
+  /**
+   * Final score calculation and result transition
+   */
+  function submitExamFinal() {
+    state.endTime = new Date();
+    state.scoreResult = Validator.calculateScore(state.userAnswers, QuestionBank);
+    displayResults();
   }
 
   /**
@@ -355,10 +415,10 @@
     const seconds = diffSeconds % 60;
     const timeFormatted = minutes > 0 ? `${minutes}m ${seconds}s` : `${seconds}s`;
 
-    // Student Badge
+    // Candidate Record Badge
     elements.resultStudentBadge.innerHTML = `
-      <strong>${escapeHtml(state.student.name)}</strong> (${escapeHtml(state.student.studentId)}) &bull; 
-      <span>${escapeHtml(state.student.email)}</span>
+      <strong>${escapeHtml(state.candidate.name)}</strong> (ID: <code>${escapeHtml(state.candidate.candidateId)}</code>) &bull; 
+      <span>${escapeHtml(state.candidate.email)}</span>
     `;
 
     // Score Badge & Pill
@@ -394,7 +454,7 @@
         <p class="review-question-text">${escapeHtml(item.questionText)}</p>
         <div class="review-answers">
           <div class="user-answer ${item.isCorrect ? 'ans-correct' : 'ans-incorrect'}">
-            <strong>Your Answer:</strong> ${escapeHtml(item.selectedOptionText)}
+            <strong>Your Submitted Answer:</strong> ${escapeHtml(item.selectedOptionText)}
           </div>
           ${!item.isCorrect ? `
           <div class="correct-answer">
@@ -402,7 +462,7 @@
           </div>` : ''}
         </div>
         <div class="review-explanation">
-          <strong>Explanation:</strong> ${escapeHtml(item.explanation)}
+          <strong>Key Takeaway &amp; Explanation:</strong> ${escapeHtml(item.explanation)}
         </div>
       `;
 
@@ -416,7 +476,7 @@
    * Sets up results restart / retake listeners
    */
   function setupResultsListeners() {
-    // Retake exam with same student info
+    // Retake exam with same candidate info
     elements.btnRetake.addEventListener('click', () => {
       state.userAnswers = {};
       state.startTime = new Date();
@@ -425,9 +485,10 @@
       startExamSession();
     });
 
-    // New student attempt
+    // New candidate attempt
     elements.btnNewStudent.addEventListener('click', () => {
-      state.student = { name: '', email: '', studentId: '' };
+      state.candidate = { name: '', email: '', candidateId: '', studentId: '' };
+      state.student = state.candidate;
       state.userAnswers = {};
       state.startTime = null;
       state.endTime = null;

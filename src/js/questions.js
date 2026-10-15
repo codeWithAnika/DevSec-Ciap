@@ -1,7 +1,6 @@
 /**
- * DevSecOps & Software Testing Question Bank
- * Course: DevSecOps Lab (CO5, SDG 4: Quality Education)
- * Student: Talavadekar Anika Vinit (124BTCS1036)
+ * ExamFlow - Core Assessment Question Bank
+ * Standardized assessment items and detailed explanations
  */
 
 const QuestionBank = [
