@@ -3,8 +3,8 @@
   "Trivy": {
     "Version": "0.76.0"
   },
-  "ReportID": "01a14acd-3fb2-7a31-93a4-05422b797e5f",
-  "CreatedAt": "2026-10-17T16:58:47.602677738Z",
+  "ReportID": "01a14ae2-f955-7c7b-9520-9462a640ccd4",
+  "CreatedAt": "2026-10-17T17:22:31.381821437Z",
   "ArtifactID": "sha256:41e249eae209f4be8490b9a4f7482e0604d1e57f8988fa810547e571be1813e7",
   "ArtifactName": "devsec-online-exam:1.2",
   "ArtifactType": "container_image",
