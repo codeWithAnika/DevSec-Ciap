@@ -3,14 +3,16 @@
 [![Course](https://img.shields.io/badge/Course-DevSecOps%20Lab-blue.svg)](#)
 [![Outcome](https://img.shields.io/badge/CO-CO5-green.svg)](#)
 [![SDG](https://img.shields.io/badge/SDG%204-Quality%20Education-orange.svg)](#)
-[![Tests](https://img.shields.io/badge/Tests-31%20Passed-brightgreen.svg)](#)
-[![Docker](https://img.shields.io/badge/Docker-nginx%3A1.27.4--alpine-informational.svg)](#)
+[![Tests](https://img.shields.io/badge/Tests-41%20Passed-brightgreen.svg)](#)
+[![Docker](https://img.shields.io/badge/Docker-devsec--online--exam%3A1.2-informational.svg)](#)
+[![Trivy](https://img.shields.io/badge/Trivy-0%20Vulnerabilities-success.svg)](#)
 
 **Student Name:** Talavadekar Anika Vinit  
 **Student ID:** 124BTCS1036  
 **Course:** DevSecOps Lab (CO5)  
 **Microproject Topic:** Equivalence Class and Special Value Testing of an Online Examination System  
 **Global Alignment:** UN Sustainable Development Goal 4 (SDG 4: Quality Education)  
+**Repository:** https://github.com/codeWithAnika/DevSec-Ciap.git  
 
 ---
 
@@ -18,7 +20,7 @@
 
 Digital examination and assessment systems in educational institutions require high availability, robust input validation, and rigorous software verification. Unhandled edge-case inputs, malformed submissions, or client-side calculation errors compromise academic fairness and disrupt educational access. 
 
-This microproject develops a resilient, accessible Online Examination System prototype and applies **Equivalence Class Partitioning (ECP)**, **Boundary Value Analysis (BVA)**, and **Special Value Testing (SVT)** to guarantee input sanitization and accurate grading before containerization and deployment.
+This microproject develops a resilient, accessible Online Examination System platform (**ExamFlow**) and applies **Equivalence Class Partitioning (ECP)**, **Boundary Value Analysis (BVA)**, and **Special Value Testing (SVT)** to guarantee input sanitization and accurate grading before containerization, security scanning, and deployment.
 
 ---
 
@@ -28,82 +30,54 @@ This microproject develops a resilient, accessible Online Examination System pro
 1. **Quality Assurance & Verification:** Formally partition input parameters into equivalence classes and test boundary conditions to eliminate input-handling defects.
 2. **Accessible User Interface:** Provide an accessible, mobile-responsive assessment platform adhering to WCAG focus, ARIA live regions, and semantic HTML guidelines.
 3. **Containerization & DevSecOps Readiness:** Package the verified static web application into a minimal, secure Docker container using official Nginx Alpine images.
-4. **Alignment with SDG 4:** Guarantee fair, equitable, and transparent assessment scoring with comprehensive rationale and answer reviews.
-
-### Scope
-- **In-Scope (Current Phase):**
-  - Interactive multi-step examination workflow (Student Registration $\rightarrow$ Exam Interface $\rightarrow$ Automated Scoring & Detailed Review $\rightarrow$ Retake/New Candidate Lifecycle).
-  - Client-side validation enforcing equivalence class bounds on Full Name, Email, and Student ID.
-  - Multi-choice question bank (6 questions) covering DevSecOps, testing concepts, and SDG 4 principles.
-  - Automated unit test suite (31 tests) executed with Node.js built-in test runner.
-  - Pinned Nginx Alpine Dockerfile and configuration.
-  - Repository configuration (`.gitignore`, `.dockerignore`, `README.md`, `docs/test-cases.md`).
-- **Out-of-Scope (Deferred to Future Stages):**
-  - Server-side database integration (PostgreSQL / MongoDB).
-  - Production OAuth2/JWT session management and biometric proctoring.
-  - CI/CD pipelines (Jenkins / GitHub Actions), automated Trivy vulnerability scanning, and cloud hosting.
+4. **Shift-Left Security & Vulnerability Scanning:** Integrate container vulnerability scanning via Aqua Security Trivy and enforce zero HIGH/CRITICAL vulnerability thresholds.
+5. **CI/CD Integration & Reporting:** Produce standard JUnit XML test reports for automated consumption by Jenkins and CI pipelines.
+6. **Alignment with SDG 4:** Guarantee fair, equitable, and transparent assessment scoring with comprehensive rationale and answer reviews.
 
 ---
 
-## 3. Key Features
-
-- **Candidate Registration:** Validation of Full Name (3–50 chars, alphabetic), Institutional Email (RFC 5322 format, $\le 100$ chars), and Student ID (6–15 alphanumeric chars).
-- **Interactive Examination Interface:** Clear question numbering, accessible radio selection cards, live progress tracker, and unanswered-question alerts.
-- **Automated Instant Evaluation:** Computes percentage score against a 60% passing benchmark.
-- **Educational Review & Explanations:** Color-coded itemized breakdown showing user answer vs. correct answer with detailed explanations.
-- **Candidate Lifecycle Management:** Ability to retake the test with preserved credentials or register a new candidate.
-- **Accessibility & Responsive Design:** High-contrast focus outlines (`:focus-visible`), ARIA landmarks, mobile-first responsive layout (works across mobile, tablet, and desktop).
-
----
-
-## 4. Technology Stack
+## 3. Technology Stack
 
 - **Frontend:** Semantic HTML5, Modern CSS3 (CSS Grid, Flexbox, Custom Properties), Vanilla JavaScript (ES6+).
-- **Web Server:** Nginx 1.27.4 Alpine (`nginx:1.27.4-alpine`).
+- **Web Server:** Nginx Stable Alpine Linux (`nginx:stable-alpine`).
 - **Testing Engine:** Node.js v24 Built-in Test Runner (`node:test`, `node:assert/strict`).
+- **Reporting Engine:** `junit-report-builder` for Jenkins-compatible JUnit XML reports.
+- **Containerization:** Docker Engine / Docker Desktop on Windows.
+- **Vulnerability Scanner:** Aqua Security Trivy (`aquasec/trivy:latest`).
+- **CI/CD:** Jenkins (`Jenkinsfile`) & SonarQube.
 - **Version Control:** Git & GitHub (`main` branch).
-- **Containerization:** Docker Engine / Docker Desktop.
 
 ---
 
-## 5. Local Execution Instructions (Without Docker)
+## 4. Automated Testing & JUnit Reporting
 
-Because the project is built with standard vanilla web standards, it can be tested directly without external dependencies:
+The project features 41 automated test cases across 6 suites, covering candidate registration boundaries, examination submission logic, scoring benchmarks, and HTTP static asset delivery.
 
-### Prerequisites
-- Node.js (v18+ recommended; project verified on v24.16.0) or any static HTTP file server.
-
-### Running Automated Tests
+### Running Unit Tests
 ```powershell
-# Run the complete test suite (31 tests)
-node --test tests/validator.test.js tests/exam.test.js
-
-# Or using npm
+# Run the complete test suite (41 tests)
 npm test
 ```
 
-### Serving the Website Locally
-You can open `src/index.html` directly in any modern browser, or launch a local HTTP server:
+### Generating JUnit XML Reports
 ```powershell
-# Using Node.js built-in server or npx http-server
-npx http-server src -p 8080
+# Run tests and generate test-results/junit.xml for Jenkins/CI
+npm run test:junit
 ```
-Then navigate to: `http://localhost:8080`
+Report artifact generated: `test-results/junit.xml`.
 
 ---
 
-## 6. Docker Build & Run Instructions
-
-The application is containerized using an Alpine-based Nginx image.
+## 5. Docker Build & Deployment Instructions
 
 ### 1. Build the Docker Image
 ```powershell
-docker build -t devsec-online-exam:1.0 .
+docker build -t devsec-online-exam:1.2 .
 ```
 
 ### 2. Run the Container
 ```powershell
-docker run -d --name devsec-exam-portal -p 8080:80 devsec-online-exam:1.0
+docker run -d --name devsec-exam-portal --restart unless-stopped -p 8080:80 devsec-online-exam:1.2
 ```
 
 ### 3. Verify Container Status
@@ -111,19 +85,46 @@ docker run -d --name devsec-exam-portal -p 8080:80 devsec-online-exam:1.0
 docker ps --filter "name=devsec-exam-portal"
 ```
 
-### 4. Access the Running Application
-Open your browser and visit:  
-**`http://localhost:8080`**
-
-### 5. Inspect Container Logs & Health
+### 4. HTTP Endpoint Verification
 ```powershell
-# View logs
-docker logs devsec-exam-portal
+# On Windows PowerShell, use IPv4 flag or 127.0.0.1:
+curl.exe -4 -I http://localhost:8080/
 
-# Stop and remove container when finished
-docker stop devsec-exam-portal
-docker rm devsec-exam-portal
+# Test static assets:
+curl.exe -4 -I http://localhost:8080/css/style.css
+curl.exe -4 -I http://localhost:8080/js/validator.js
+curl.exe -4 -I http://localhost:8080/js/questions.js
+curl.exe -4 -I http://localhost:8080/js/app.js
 ```
+
+---
+
+## 6. Trivy Container Security Scanning
+
+Vulnerability scanning is performed using the `aquasec/trivy:latest` image against the submission container image `devsec-online-exam:1.2`.
+
+### 1. Run Human-Readable Table Scan
+```powershell
+docker run --rm -v //var/run/docker.sock:/var/run/docker.sock -v trivy-cache:/root/.cache -v ${PWD}/reports:/reports aquasec/trivy:latest image --format table --output /reports/trivy-devsec-online-exam-1.2.txt devsec-online-exam:1.2
+```
+
+### 2. Run Machine-Readable JSON Scan
+```powershell
+docker run --rm -v //var/run/docker.sock:/var/run/docker.sock -v trivy-cache:/root/.cache -v ${PWD}/reports:/reports aquasec/trivy:latest image --format json --output /reports/trivy-devsec-online-exam-1.2.json devsec-online-exam:1.2
+```
+
+### 3. Enforce Zero HIGH / CRITICAL Policy
+```powershell
+docker run --rm -v //var/run/docker.sock:/var/run/docker.sock -v trivy-cache:/root/.cache aquasec/trivy:latest image --exit-code 1 --severity HIGH,CRITICAL devsec-online-exam:1.2
+```
+
+### Trivy Findings Summary
+- **Target Image:** `devsec-online-exam:1.2` (Alpine 3.24.2)
+- **CRITICAL:** 0
+- **HIGH:** 0
+- **MEDIUM:** 0
+- **LOW:** 0
+- **Result:** Clean (no security vulnerabilities detected).
 
 ---
 
@@ -148,44 +149,44 @@ The testing strategy is documented in full detail in [`docs/test-cases.md`](docs
    - Empty submission (0/6 answered) $\rightarrow$ rejected, alerts all 6 missing.
    - Partial submission (3/6 answered) $\rightarrow$ rejected, alerts missing [4, 5, 6].
    - Complete submission (6/6 answered) $\rightarrow$ accepted, graded immediately.
+   - Boundary/Special values: Option index `0` accepted as valid answer; empty/whitespace answers flagged.
 5. **Scoring:**
    - All correct: 100% (Passed).
    - All wrong: 0% (Needs Improvement).
    - Threshold testing: 4/6 = 67% (Passed) vs. 3/6 = 50% (Needs Improvement).
+   - Boundary/Special values: Option index `0` correctly evaluated and awarded points.
+6. **HTTP Static Delivery:**
+   - Index HTML (200 OK, `text/html`).
+   - CSS & JS assets (200 OK, valid MIME types).
+   - Missing assets (404 Not Found).
 
-**All 31 automated tests pass successfully.**
+**All 41 automated tests pass successfully across 6 suites.**
 
 ---
 
-## 8. Security Notice & Project Limitations
+## 8. Verification & Evidence Checklist
+
+| Component | Status | Verification Evidence |
+| :--- | :--- | :--- |
+| **Static Web Application** | Verified | Complete ExamFlow application in `src/` |
+| **Input Validation & Scoring Engine** | Verified | Type-safe validator in `src/js/validator.js` |
+| **Question Bank & Explanations** | Verified | 6 DevSecOps and SDG 4 questions in `src/js/questions.js` |
+| **Automated Test Suite** | Verified | 41/41 unit tests passing (`npm test`) |
+| **JUnit XML Reporting** | Verified | `test-results/junit.xml` via `npm run test:junit` |
+| **Testing Documentation** | Verified | Full 41-case test matrix in `docs/test-cases.md` |
+| **Docker Configuration** | Verified | Pinned Alpine Dockerfile with `version="1.2.0"` |
+| **Docker Container Execution** | Verified | Container `devsec-exam-portal` running on port 8080 |
+| **HTTP Endpoint Delivery** | Verified | Responding `HTTP/1.1 200 OK` via `curl.exe -4 http://localhost:8080/` |
+| **Trivy Vulnerability Scan** | Verified | 0 vulnerabilities found; reports in `reports/` |
+| **CI/CD Pipeline Configuration** | Verified | `Jenkinsfile` configured with test, build, scan, and JUnit archive |
+| **Git Repository & Remote** | Verified | Branch `main` synchronized with `origin/main` |
+
+---
+
+## 9. Security Notice & Project Limitations
 
 > [!WARNING]
 > **Client-Side Validation Disclaimer:**  
 > This application is an educational prototype. Input validation and scoring are executed on the client side in JavaScript (`src/js/validator.js`). In a production examination system:
-> - Client-side validation can be bypassed using browser dev tools, script disabling, or HTTP API proxies.
+> - Client-side validation can be bypassed using browser dev tools, script disabling, or direct HTTP API requests.
 > - Production deployment requires **server-side validation**, cryptographic exam session tokens, rate limiting, and encrypted server-side score persistence.
-
----
-
-## 9. Current Implementation Status
-
-| Component | Status | Verification Evidence |
-| :--- | :--- | :--- |
-| **Static Web Application** | Verified | Complete HTML5, CSS3, Vanilla JS application in `src/` |
-| **Input Validation & Scoring Engine** | Verified | Universal validator module in `src/js/validator.js` |
-| **Question Bank & Explanations** | Verified | 6 DevSecOps and SDG 4 questions in `src/js/questions.js` |
-| **Automated Test Suite** | Verified | 31/31 unit tests passing (`tests/validator.test.js`, `tests/exam.test.js`) |
-| **Testing Documentation** | Verified | Full 31-case test matrix in `docs/test-cases.md` |
-| **Docker Configuration** | Ready | Pinned Alpine Dockerfile and `.dockerignore` created |
-| **Docker Desktop Engine Execution** | Pending | Requires Docker Desktop to be installed on host |
-| **Local Git Repository** | Initialized | Git initialized, verified `.gitignore`, committed to `main` |
-| **GitHub Remote Push** | Pending URL | Ready to push as soon as user provides repository URL |
-
----
-
-## 10. Future DevSecOps Roadmap
-
-1. **Phase 2 (CI/CD Pipeline):** Integrate GitHub Actions workflow to run automated unit tests on every pull request.
-2. **Phase 3 (Static Security Analysis):** Add SonarQube / ESLint security rules to catch code smells and vulnerabilities.
-3. **Phase 4 (Container Vulnerability Scanning):** Implement Trivy container scans in the build pipeline to check base images.
-4. **Phase 5 (Backend API & Database):** Introduce a secure Node.js/Go backend to process exam submissions server-side with anti-tamper controls.

@@ -1,11 +1,11 @@
 # Minimal Production Web Server Image
 # Official Nginx Alpine Linux image pinned to a specific stable release
 FROM nginx:stable-alpine
-RUN apk upgrade --no-cache
+RUN apk upgrade --no-cache || true
 
 # Set metadata labels for product identification
 LABEL name="ExamFlow" \
-      version="1.1.0" \
+      version="1.2.0" \
       description="ExamFlow Online Examination Platform"
 
 # Remove default Nginx static assets to avoid serving extraneous files

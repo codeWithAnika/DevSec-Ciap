@@ -77,10 +77,20 @@ All test cases listed below have been executed and verified using the automated 
 | **TC-SUBMIT-02**| Exam Submission | Invalid Equivalence Class (Partial Submission) | `{ 0: 1, 1: 1, 2: 2 }` (3/6 answered) | Candidate on exam view | 1. Answer Q1, Q2, Q3<br>2. Leave Q4, Q5, Q6 empty<br>3. Click Submit | Submission blocked; banner alerts: "Unanswered question(s): 4, 5, 6"; scroll to Q4. | Submission blocked; missing list [4, 5, 6] identified. | **PASS** |
 | **TC-SUBMIT-03**| Exam Submission | Valid Equivalence Class (Complete Submission) | All 6 questions answered | Candidate on exam view | 1. Select answer for all 6 questions<br>2. Click Submit | Submission accepted; score calculated; transition to Results view. | Accepted; transitions smoothly to results. | **PASS** |
 | **TC-SUBMIT-04**| Exam Submission | Special Value (Null / Malformed State) | `null`, `undefined` | Candidate on exam view | 1. Submit invalid payload | Graceful rejection; error: "Invalid exam state or submission payload." | Rejected gracefully without uncaught exceptions. | **PASS** |
+| **TC-SUBMIT-05**| Exam Submission | Boundary Value (Option Index 0 Valid) | `{ 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }` | Candidate on exam view | 1. Select option 0 for all questions<br>2. Submit | Accepted; `isValid: true`; 0-indexed choice 0 treated as valid. | Accepted, `isValid: true`. | **PASS** |
+| **TC-SUBMIT-06**| Exam Submission | Special Value (Empty String / Whitespace in answers) | `{ 0: 0, 1: '', 2: '   ' }` | Candidate on exam view | 1. Submit answers with empty strings | Rejected; questions 2 and 3 flagged as missing. | Rejected; missingQuestions: [2, 3]. | **PASS** |
 | **TC-SCORE-01** | Scoring Engine | Equivalence Class (100% Perfect Score) | All 6 correct options | Examination submitted | 1. Grade submission | Score = 6/6 (100%); Status = PASSED; all review cards green. | Correct: 6/6, 100%, `isPassed: true`. | **PASS** |
 | **TC-SCORE-02** | Scoring Engine | Equivalence Class (0% Score) | All 6 incorrect options | Examination submitted | 1. Grade submission | Score = 0/6 (0%); Status = NEEDS IMPROVEMENT; all review cards red. | Correct: 0/6, 0%, `isPassed: false`. | **PASS** |
 | **TC-SCORE-03** | Scoring Engine | Boundary Value (Passing Benchmark: 67%) | 4 correct, 2 incorrect | Examination submitted | 1. Grade submission | Score = 4/6 (67%); $\ge 60\%$ passing threshold; Status = PASSED. | Correct: 4/6, 67%, `isPassed: true`. | **PASS** |
 | **TC-SCORE-04** | Scoring Engine | Boundary Value (Failing Benchmark: 50%) | 3 correct, 3 incorrect | Examination submitted | 1. Grade submission | Score = 3/6 (50%); $< 60\%$ passing threshold; Status = NEEDS IMPROVEMENT. | Correct: 3/6, 50%, `isPassed: false`. | **PASS** |
+| **TC-SCORE-06** | Scoring Engine | Boundary Value (Option Index 0 Scored) | Answer index 0 for question with correctOption 0 | Examination submitted | 1. Calculate score | Option 0 recognized as answered and awarded points. | Answered count updated; correct marks awarded. | **PASS** |
+| **TC-SCORE-07** | Scoring Engine | Special Value (Empty String, Whitespace, Null Answers) | `{ 0: '', 1: '   ', 2: null }` | Examination submitted | 1. Calculate score | Marked as "Not Answered"; 0 marks awarded. | Treated as unanswered; review shows 'Not Answered'. | **PASS** |
+| **TC-HTTP-01**  | Static Web Server | HTTP Endpoint (Index Page) | `GET /` | Web server listening | 1. Request `/`<br>2. Validate response | Status 200 OK; Content-Type: `text/html`. | 200 OK, `text/html`. | **PASS** |
+| **TC-HTTP-02**  | Static Web Server | HTTP Endpoint (CSS Stylesheet) | `GET /css/style.css` | Web server listening | 1. Request CSS asset<br>2. Validate response | Status 200 OK; Content-Type: `text/css`. | 200 OK, `text/css`. | **PASS** |
+| **TC-HTTP-03**  | Static Web Server | HTTP Endpoint (Validator Script) | `GET /js/validator.js` | Web server listening | 1. Request JS asset<br>2. Validate response | Status 200 OK; Content-Type: `application/javascript`. | 200 OK, `application/javascript`. | **PASS** |
+| **TC-HTTP-04**  | Static Web Server | HTTP Endpoint (Questions Bank) | `GET /js/questions.js` | Web server listening | 1. Request JS asset<br>2. Validate response | Status 200 OK; Content-Type: `application/javascript`. | 200 OK, `application/javascript`. | **PASS** |
+| **TC-HTTP-05**  | Static Web Server | HTTP Endpoint (App Logic) | `GET /js/app.js` | Web server listening | 1. Request JS asset<br>2. Validate response | Status 200 OK; Content-Type: `application/javascript`. | 200 OK, `application/javascript`. | **PASS** |
+| **TC-HTTP-06**  | Static Web Server | HTTP Endpoint (Non-Existent File) | `GET /nonexistent.html` | Web server listening | 1. Request non-existent asset<br>2. Validate response | Status 404 Not Found. | 404 Not Found. | **PASS** |
 | **TC-RESTART-01**| Exam Lifecycle | Retake Examination (Same Candidate) | Click "Retake Examination" | Results view displayed | 1. Click Retake button | Resets answer state; preserves candidate info; opens exam at Q1. | State reset; candidate preserved; exam reopened. | **PASS** |
 | **TC-RESTART-02**| Exam Lifecycle | Register New Candidate | Click "Register New Candidate" | Results view displayed | 1. Click New Candidate button | Resets all state and form inputs; clears errors; opens registration view. | Full state cleared; registration view focused. | **PASS** |
 
@@ -88,13 +98,16 @@ All test cases listed below have been executed and verified using the automated 
 
 ## 4. Execution Evidence & Verification Summary
 
-- **Total Test Cases Defined:** 31
-- **Total Test Cases Executed:** 31
-- **Passed:** 31
+- **Total Test Cases Defined:** 41
+- **Total Test Cases Executed:** 41
+- **Passed:** 41
 - **Failed:** 0
+- **Suites:** 6
 - **Test Framework:** Node.js Built-in Test Runner (`node:test`, `node:assert/strict`)
-- **Execution Command:** `node --test tests/validator.test.js tests/exam.test.js`
-- **Duration:** 135.59 ms
+- **Execution Command:** `npm test` (`node --test tests/*.test.js`)
+- **JUnit XML Report Command:** `npm run test:junit` (`node scripts/run-tests-junit.js`)
+- **Generated Report File:** `test-results/junit.xml`
+- **Duration:** ~700 ms
 - **Automated Verification Status:** Verified on Node.js v24.16.0 (Windows 11)
 
 ---

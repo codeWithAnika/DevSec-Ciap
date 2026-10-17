@@ -23,12 +23,13 @@ pipeline {
                 sh 'node --version'
                 sh 'npm --version'
                 sh 'npm test'
+                sh 'npm run test:junit'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build --pull -t examflow:${BUILD_NUMBER} -t examflow:ci .'
+                sh 'docker build -t examflow:${BUILD_NUMBER} -t examflow:ci .'
             }
         }
 

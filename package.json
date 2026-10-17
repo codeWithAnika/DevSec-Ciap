@@ -6,6 +6,7 @@
   "license": "ISC",
   "scripts": {
     "test": "node --test tests/*.test.js",
+    "test:junit": "node scripts/run-tests-junit.js",
     "start": "node scripts/serve.js"
   },
   "keywords": [
@@ -15,5 +16,8 @@
     "boundary-value-analysis",
     "sdg4",
     "quality-education"
-  ]
+  ],
+  "devDependencies": {
+    "junit-report-builder": "^5.1.2"
+  }
 }

@@ -42,6 +42,7 @@ dist/
 build/
 coverage/
 .nyc_output/
+test-results/
 *.tmp
 *~
 
