@@ -3,12 +3,13 @@ pipeline {
 
     options {
         timestamps()
+        timeout(time: 15, unit: 'MINUTES')
         skipDefaultCheckout(true)
         disableConcurrentBuilds()
     }
 
     environment {
-        IMAGE_NAME = 'examflow'
+        IMAGE_NAME = 'devsec-online-exam'
     }
 
     stages {
@@ -18,10 +19,16 @@ pipeline {
             }
         }
 
-        stage('Run Automated Tests') {
+        stage('Environment & Dependencies') {
             steps {
                 sh 'node --version'
                 sh 'npm --version'
+                sh 'npm ci --prefer-offline || npm install'
+            }
+        }
+
+        stage('Run Automated Tests') {
+            steps {
                 sh 'npm test'
                 sh 'npm run test:junit'
             }
@@ -29,7 +36,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t examflow:${BUILD_NUMBER} -t examflow:ci .'
+                sh 'docker build -t devsec-online-exam:1.2 -t examflow:${BUILD_NUMBER} -t examflow:ci .'
             }
         }
 
@@ -54,7 +61,7 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: 'reports/trivy-examflow-*', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'reports/**', allowEmptyArchive: true
             junit testResults: 'test-results/**/*.xml', allowEmptyResults: true
         }
         success {
@@ -65,3 +72,4 @@ pipeline {
         }
     }
 }
+

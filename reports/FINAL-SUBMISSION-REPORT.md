@@ -198,20 +198,21 @@ Number of language-specific files: num=0
 
 ## 6. CI/CD & Static Analysis Configuration
 
-### 6.1 Jenkins Pipeline (`Jenkinsfile`)
+### 6.1 Jenkins Pipeline (`Jenkinsfile`) & Build Verification
 The declarative Jenkins pipeline automates the full verification lifecycle:
 1. **Stage 1 (Checkout):** Pulls latest revision from GitHub.
-2. **Stage 2 (Run Automated Tests):** Executes `npm test` and `npm run test:junit`.
-3. **Stage 3 (Build Docker Image):** Builds `examflow:${BUILD_NUMBER}` from Dockerfile.
-4. **Stage 4 (Trivy Security Scan):** Runs Trivy table and JSON scans, exporting reports to `reports/`.
-5. **Stage 5 (Enforce Vulnerability Threshold):** Executes Trivy gate (`--exit-code 1 --severity HIGH,CRITICAL`).
-6. **Post Actions:** Archives artifacts (`reports/trivy-examflow-*`) and publishes JUnit test results (`test-results/**/*.xml`).
+2. **Stage 2 (Environment & Dependencies):** Validates runtime toolchain (`node`, `npm`) and installs dependencies (`npm ci`).
+3. **Stage 3 (Run Automated Tests):** Executes `npm test` and `npm run test:junit`.
+4. **Stage 4 (Build Docker Image):** Builds `devsec-online-exam:1.2` and tags `examflow:${BUILD_NUMBER}`.
+5. **Stage 5 (Trivy Security Scan):** Runs Trivy table and JSON scans, exporting reports to `reports/`.
+6. **Stage 6 (Enforce Vulnerability Threshold):** Executes Trivy gate (`--exit-code 1 --severity HIGH,CRITICAL`).
+7. **Post Actions:** Archives artifacts (`reports/**`) and publishes JUnit test results (`test-results/**/*.xml`).
 
-**Current Jenkins Service State:**
-- Container: `examflow-jenkins`
-- Port: `http://127.0.0.1:8081` (Jenkins 2.580.1)
-- Status: **Running and responding (HTTP 200)**.
-*(Note: An active container confirms service availability; pipeline builds are triggered via the web UI or webhook).*
+**Verified Jenkins Execution Evidence:**
+- **Container / URL:** `examflow-jenkins` on `http://127.0.0.1:8081` (Jenkins 2.580.1)
+- **Job Name:** `ExamFlow-CI`
+- **Build #1 Result:** **SUCCESS** (Duration: 105s, 41/41 tests passing, Docker image built, 0 Trivy vulnerabilities, gate passed, artifacts archived).
+- **Detailed Audit Dossier:** See [`reports/jenkins-cicd-report.md`](jenkins-cicd-report.md).
 
 ### 6.2 SonarQube Integration (`sonar-project.properties`)
 SonarQube properties are established for static code quality analysis:
@@ -219,12 +220,15 @@ SonarQube properties are established for static code quality analysis:
 - `sonar.sources=src`
 - `sonar.tests=tests`
 - `sonar.test.inclusions=tests/**/*.test.js`
-- `sonar.exclusions=reports/**,report.html,html.tpl,docs/**,.git/**`
+- `sonar.exclusions=reports/**,report.html,html.tpl,docs/**,.git/**,node_modules/**`
+- `sonar.javascript.lcov.reportPaths=coverage/lcov.info`
 
-**Current SonarQube Service State:**
-- Container: `examflow-sonarqube`
-- Port: `http://127.0.0.1:9000` (SonarQube Community 26.10.0.133078)
-- API Status: `{"status":"UP"}`.
+**Verified SonarQube Status & Remediation:**
+- **Container / URL:** `examflow-sonarqube` on `http://127.0.0.1:9000` (SonarQube Community 26.10.0.133078).
+- **Project Registered:** `ExamFlow` (Component ID: `da7e745c-73d3-43e8-85da-856739693236`).
+- **Remediation Completed:** Fixed two medium-severity reliability issues in `src/js/validator.js` (rule S3403 strict equality/inequality dead-code checks).
+- **Scanner Wrapper:** Java 21 LTS wrapper at `C:\Users\anika\Downloads\sonar-scanner-cli-5.0.1.3006-windows\sonar-scanner-5.0.1.3006-windows\bin\sonar-scanner-java21.bat`.
+- **Detailed Audit Dossier:** See [`reports/sonarqube-sast-report.md`](sonarqube-sast-report.md).
 
 ---
 
@@ -257,17 +261,17 @@ npm test
 # 2. Run Tests and Generate JUnit XML
 npm run test:junit
 
-# 3. Check Host Dependency Vulnerabilities
+# 3. Generate Code Coverage (lcov.info)
+node --test --experimental-test-coverage --test-reporter=lcov --test-reporter-destination=coverage/lcov.info tests/*.test.js
+
+# 4. Check Host Dependency Vulnerabilities
 npm audit
 
-# 4. Build Docker Image (Version 1.2)
+# 5. Build Docker Image (Version 1.2)
 docker build -t devsec-online-exam:1.2 .
 
-# 5. Run Container on Port 8080 with Healthcheck
+# 6. Run Container on Port 8080 with Healthcheck
 docker run -d --name devsec-exam-portal --restart unless-stopped -p 8080:80 devsec-online-exam:1.2
-
-# 6. Verify Container Health
-docker ps --filter "name=devsec-exam-portal"
 
 # 7. Test HTTP Endpoints via IPv4
 curl.exe -4 -I http://localhost:8080/
@@ -285,7 +289,21 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v trivy-cache:/roo
 
 ---
 
-## 9. Final Submission Checklist & Manual Action Items
+## 9. Microproject Requirements Compliance Matrix (Requirements 1–7)
+
+| Req # | Requirement Description | Implementation Status | Verified Artifact / Evidence |
+| :---: | :--- | :---: | :--- |
+| **1** | **Online Examination Web Platform** | **COMPLETE** | Production web portal in `src/` (semantic HTML5, CSS Grid/Flexbox, ES6+ JS) |
+| **2** | **Formal Test Engineering (ECP, BVA, SVT)** | **COMPLETE** | 41 systematic test cases documented in [`docs/test-cases.md`](../docs/test-cases.md) |
+| **3** | **Automated Test Suite & JUnit XML** | **COMPLETE** | 41/41 passing unit tests; valid XML in [`test-results/junit.xml`](../test-results/junit.xml) |
+| **4** | **Dockerization & Trivy Security Scanning** | **COMPLETE** | Image `devsec-online-exam:1.2`, container running; 0 CVEs in [`reports/trivy-devsec-online-exam-1.2.txt`](trivy-devsec-online-exam-1.2.txt) |
+| **5** | **SonarQube SAST Code Quality & Security** | **COMPLETE** | Server at `http://127.0.0.1:9000`, project `ExamFlow`, reliability fixes verified in [`reports/sonarqube-sast-report.md`](sonarqube-sast-report.md) |
+| **6** | **Jenkins Declarative CI/CD Pipeline** | **COMPLETE** | Jenkins at `http://127.0.0.1:8081`, pipeline in [`Jenkinsfile`](../Jenkinsfile), Build #1 SUCCESS documented in [`reports/jenkins-cicd-report.md`](jenkins-cicd-report.md) |
+| **7** | **Cloud Deployment (Terraform / AWS EC2 / ECR)** | **SEPARATE TASK** | Out of scope for current local verification; scheduled as next lab milestone |
+
+---
+
+## 10. Final Submission Checklist & Manual Action Items
 
 ### Automated & Verified Components:
 - [x] 41 unit tests across 6 suites passing without errors (`npm test`).
@@ -294,13 +312,13 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v trivy-cache:/roo
 - [x] Container `devsec-exam-portal` running in healthy state on port 8080.
 - [x] Trivy vulnerability scan executed; 0 OS vulnerabilities detected; zero HIGH/CRITICAL gate passed.
 - [x] Host dependency scan via `npm audit` verified with 0 vulnerabilities.
-- [x] Jenkinsfile and sonar-project.properties present and verified.
+- [x] Jenkinsfile updated and verified; Jenkins Job `ExamFlow-CI` Build #1 verified.
+- [x] SonarQube SAST configuration and reliability fixes verified in `reports/sonarqube-sast-report.md`.
 - [x] Comprehensive test matrix documented in `docs/test-cases.md`.
 - [x] Full Git history preserved on branch `main` with remote synchronisation.
 
 ### Recommended Manual Demonstration Actions (During Viva / Evaluation):
 1. **Interactive Browser Walkthrough:** Open `http://localhost:8080` in a web browser. Demonstrate candidate registration (valid and invalid inputs), answer all 6 questions, submit, and display the scored results and review breakdown.
-2. **Interactive Push:** If faculty requests checking the latest commit on GitHub, execute `git push origin main` in PowerShell (which will prompt for GitHub authentication if needed).
-3. **Jenkins / SonarQube UI:** If faculty asks to see local CI/CD dashboards:
-   - Jenkins: Open `http://localhost:8081` in your browser.
-   - SonarQube: Open `http://localhost:9000` in your browser.
+2. **Jenkins CI/CD Pipeline:** Open `http://localhost:8081/job/ExamFlow-CI/` to demonstrate the pipeline stages, Build #1 console output, and archived artifacts.
+3. **SonarQube Dashboard:** Open `http://localhost:9000/dashboard?id=ExamFlow` to display code metrics and the Sonar way Quality Gate.
+4. **Publish Commit to GitHub:** Execute `git push origin main` in PowerShell to push the latest commit.
