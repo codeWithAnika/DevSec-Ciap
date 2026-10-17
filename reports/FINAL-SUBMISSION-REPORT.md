@@ -210,8 +210,9 @@ The declarative Jenkins pipeline automates the full verification lifecycle:
 
 **Verified Jenkins Execution Evidence:**
 - **Container / URL:** `examflow-jenkins` on `http://127.0.0.1:8081` (Jenkins 2.580.1)
-- **Job Name:** `ExamFlow-CI`
+- **Job Name:** `ExamFlow-CI` ([http://127.0.0.1:8081/job/ExamFlow-CI/](http://127.0.0.1:8081/job/ExamFlow-CI/))
 - **Build #1 Result:** **SUCCESS** (Duration: 105s, 41/41 tests passing, Docker image built, 0 Trivy vulnerabilities, gate passed, artifacts archived).
+- **Build #3 Result:** **SUCCESS** (Latest run, Duration: 1m 55s, 41/41 tests passing, `devsec-online-exam:1.2` & `examflow:3` built, 0 Trivy vulnerabilities across 71 Alpine packages, Trivy gate exit code 0, artifacts archived: `trivy-examflow-3.*` and `junit.xml`).
 - **Detailed Audit Dossier:** See [`reports/jenkins-cicd-report.md`](jenkins-cicd-report.md).
 
 ### 6.2 SonarQube Integration (`sonar-project.properties`)

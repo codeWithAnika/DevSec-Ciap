@@ -115,53 +115,70 @@ pipeline {
 
 ## 3. Verified Pipeline Build Execution Evidence
 
-Inspection of the Jenkins job [`ExamFlow-CI`](http://127.0.0.1:8081/job/ExamFlow-CI/) confirms successful pipeline execution:
+Inspection of the Jenkins job [`ExamFlow-CI`](http://127.0.0.1:8081/job/ExamFlow-CI/) confirms successful pipeline execution across builds:
+
+### 3.1 Build Execution History
+
+| Build Number | Timestamp | Duration | Git Commit | Result | Test Outcome | Trivy Findings | Artifacts Archived |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Build #3** | 2026-10-17 20:20 UTC | 1m 55s (115,804 ms) | `4066451` | **SUCCESS** | 41/41 Passed (0 fail, 0 skip) | 0 Vulnerabilities (71 pkgs) | `trivy-examflow-3.*`, `junit.xml` |
+| **Build #2** | 2026-10-17 20:12 UTC | 14s (14,489 ms) | `4066451` | **FAILURE** | N/A (Missing `node_modules`) | N/A | None (Clean workspace issue) |
+| **Build #1** | 2026-10-17 19:48 UTC | 1m 45s (105,023 ms) | `4066451` | **SUCCESS** | 41/41 Passed (0 fail, 0 skip) | 0 Vulnerabilities (71 pkgs) | `trivy-examflow-1.*`, `junit.xml` |
+
+> **Diagnostic Note on Build #2:** Build #2 failed because in an ephemeral/clean Jenkins workspace, `npm run test:junit` requires local development dependencies (such as `junit-report-builder`). We resolved this systematically by adding `npm ci --prefer-offline || npm install` directly into the Declarative `Jenkinsfile` under the `Environment & Dependencies` stage. Build #3 subsequently succeeded with full end-to-end automation.
+
+### 3.2 Latest Build Evidence (Build #3)
 
 | Build Attribute | Recorded Evidence |
 | :--- | :--- |
 | **Job Name** | `ExamFlow-CI` |
-| **Build Number** | **Build #1** |
+| **Build URL** | [http://127.0.0.1:8081/job/ExamFlow-CI/3/](http://127.0.0.1:8081/job/ExamFlow-CI/3/) |
+| **Build Number** | **Build #3** (Latest Verified Run) |
 | **Result** | **SUCCESS** |
-| **Duration** | 1 minute 45 seconds (105,023 ms) |
-| **Trigger Mechanism** | User / Web UI (`submitter=anikaadmin`) |
+| **Duration** | 1 minute 55 seconds (115,804 ms) |
+| **Trigger Mechanism** | System init script trigger |
 | **Workspace Path** | `/var/jenkins_home/workspace/ExamFlow-CI` |
-| **Test Results** | 41 Tests Executed (41 Passed, 0 Failed across 6 test suites) |
-| **Docker Build Result** | Successfully built image `examflow:1` (`b8e13c62379a`) |
+| **Test Results** | 41 Tests Executed (41 Passed, 0 Failed, 0 Skipped across 6 test suites) |
+| **Docker Build Result** | Successfully built and tagged `examflow:3` and `examflow:ci` |
 | **Trivy Findings** | 0 Vulnerabilities across 71 Alpine OS packages |
 | **Trivy Gate Outcome** | Exit Code 0 (0 HIGH, 0 CRITICAL) |
-| **Archived Artifacts** | `reports/trivy-examflow-1.json`, `reports/trivy-examflow-1.txt` |
+| **Archived Artifacts** | `reports/trivy-examflow-3.json`, `reports/trivy-examflow-3.txt` |
+| **Test XML Archive** | `/var/jenkins_home/workspace/ExamFlow-CI/test-results/junit.xml` |
 
-### Console Output Excerpt from Verified Build #1:
+### Console Output Excerpt from Verified Build #3:
 ```text
 [Pipeline] stage: Run Automated Tests
-+ node --version
-v20.19.2
-+ npm --version
-9.2.0
 + npm test
 # pass 41
 # fail 0
-# duration_ms 772.52
+# duration_ms 714.28
++ npm run test:junit
+[junit-report-builder] XML written to test-results/junit.xml
 
 [Pipeline] stage: Build Docker Image
-+ docker build -t examflow:1 -t examflow:ci .
-Step 1/8 : FROM nginx:stable-alpine
-Step 2/8 : RUN apk upgrade --no-cache
-...
++ docker build -t devsec-online-exam:1.2 -t examflow:3 -t examflow:ci .
 Successfully built b8e13c62379a
-Successfully tagged examflow:1
+Successfully tagged devsec-online-exam:1.2
+Successfully tagged examflow:3
 Successfully tagged examflow:ci
 
+[Pipeline] stage: Trivy Security Scan
++ trivy image --format json --output reports/trivy-examflow-3.json examflow:3
++ trivy image --format table --output reports/trivy-examflow-3.txt examflow:3
+
 [Pipeline] stage: Enforce Vulnerability Threshold
-+ trivy image --exit-code 1 --severity HIGH,CRITICAL examflow:1
++ trivy image --exit-code 1 --severity HIGH,CRITICAL examflow:3
 Report Summary
 ┌────────────────────────────┬────────┬─────────────────┬─────────┐
 │           Target           │  Type  │ Vulnerabilities │ Secrets │
 ├────────────────────────────┼────────┼─────────────────┼─────────┤
-│ examflow:1 (alpine 3.24.2) │ alpine │        0        │    -    │
+│ examflow:3 (alpine 3.24.2) │ alpine │        0        │    -    │
 └────────────────────────────┴────────┴─────────────────┴─────────┘
+
 [Pipeline] archiveArtifacts
 Archiving artifacts
+[Pipeline] junit
+Recording test results: 41 tests, 0 failures, 0 errors
 [Pipeline] echo
 ExamFlow tests, Docker build, and Trivy security checks completed successfully.
 Finished: SUCCESS
