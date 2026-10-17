@@ -1,6 +1,7 @@
 # Minimal Production Web Server Image
 # Official Nginx Alpine Linux image pinned to a specific stable release
-FROM nginx:1.27.4-alpine
+FROM nginx:stable-alpine
+RUN apk upgrade --no-cache
 
 # Set metadata labels for product identification
 LABEL name="ExamFlow" \

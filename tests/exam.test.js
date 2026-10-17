@@ -45,6 +45,22 @@ describe('Examination Submission Validation - Equivalence Classes', () => {
     const resUndef = Validator.validateExamSubmission(undefined, totalQuestions);
     assert.equal(resUndef.isValid, false);
   });
+
+  it('TC-SUBMIT-05: Boundary/Special value - Option index 0 is valid and counted as answered', () => {
+    const zeroIndexedAnswers = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    const res = Validator.validateExamSubmission(zeroIndexedAnswers, totalQuestions);
+    assert.equal(res.isValid, true);
+    assert.equal(res.missingQuestions.length, 0);
+    assert.equal(res.error, null);
+  });
+
+  it('TC-SUBMIT-06: Special value - Empty string or whitespace answers are flagged as missing', () => {
+    const stringAnswers = { 0: 0, 1: '', 2: '   ', 3: 1, 4: 1, 5: 1 };
+    const res = Validator.validateExamSubmission(stringAnswers, totalQuestions);
+    assert.equal(res.isValid, false);
+    assert.deepEqual(res.missingQuestions, [2, 3]);
+    assert.match(res.error, /Unanswered question\(s\): 2, 3/);
+  });
 });
 
 describe('Examination Scoring Logic - Equivalence Classes & Accuracy', () => {
@@ -111,5 +127,47 @@ describe('Examination Scoring Logic - Equivalence Classes & Accuracy', () => {
     assert.equal(q2Review.isCorrect, false);
     assert.equal(q2Review.selectedOptionText, QuestionBank[1].options[0]);
     assert.equal(q2Review.correctOptionText, QuestionBank[1].options[1]);
+  });
+
+  it('TC-SCORE-06: Boundary/Special value - Option index 0 is correctly recognized as answered and scored', () => {
+    const mockQuestions = [
+      { id: 101, question: 'Sample Q1', options: ['Alpha', 'Beta'], correctOption: 0, explanation: 'Alpha is correct' },
+      { id: 102, question: 'Sample Q2', options: ['Gamma', 'Delta'], correctOption: 1, explanation: 'Delta is correct' }
+    ];
+    // Candidate chooses option 0 for Q1 (correct) and option 0 for Q2 (incorrect)
+    const answers = { 0: 0, 1: 0 };
+    const score = Validator.calculateScore(answers, mockQuestions);
+
+    assert.equal(score.totalQuestions, 2);
+    assert.equal(score.answeredCount, 2);
+    assert.equal(score.correctCount, 1);
+    assert.equal(score.incorrectCount, 1);
+    assert.equal(score.scorePercentage, 50);
+
+    assert.equal(score.review[0].isCorrect, true);
+    assert.equal(score.review[0].selectedOptionIndex, 0);
+    assert.equal(score.review[0].selectedOptionText, 'Alpha');
+
+    assert.equal(score.review[1].isCorrect, false);
+    assert.equal(score.review[1].selectedOptionIndex, 0);
+    assert.equal(score.review[1].selectedOptionText, 'Gamma');
+  });
+
+  it('TC-SCORE-07: Special value - Empty string, whitespace, and null answers are marked Not Answered', () => {
+    const mockQuestions = [
+      { id: 101, question: 'Sample Q1', options: ['A', 'B'], correctOption: 0, explanation: 'Exp 1' },
+      { id: 102, question: 'Sample Q2', options: ['C', 'D'], correctOption: 1, explanation: 'Exp 2' },
+      { id: 103, question: 'Sample Q3', options: ['E', 'F'], correctOption: 0, explanation: 'Exp 3' }
+    ];
+    const answers = { 0: '', 1: '   ', 2: null };
+    const score = Validator.calculateScore(answers, mockQuestions);
+
+    assert.equal(score.answeredCount, 0);
+    assert.equal(score.correctCount, 0);
+    assert.equal(score.incorrectCount, 3);
+    assert.equal(score.scorePercentage, 0);
+    assert.equal(score.review[0].selectedOptionText, 'Not Answered');
+    assert.equal(score.review[1].selectedOptionText, 'Not Answered');
+    assert.equal(score.review[2].selectedOptionText, 'Not Answered');
   });
 });

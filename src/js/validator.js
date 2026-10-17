@@ -194,7 +194,7 @@ const Validator = {
   /**
    * Validates Examination Answers Submission
    * Ensures every question has an answer selected before submission
-   * @param {Object.<number, number>} answers - Map of question index to selected option index
+   * @param {Object.<number, any>} answers - Map of question index to selected option index
    * @param {number} totalQuestions - Expected number of questions
    * @returns {{ isValid: boolean, missingQuestions: number[], error: string | null }}
    */
@@ -209,7 +209,8 @@ const Validator = {
 
     const missing = [];
     for (let i = 0; i < totalQuestions; i++) {
-      if (answers[i] === undefined || answers[i] === null || answers[i] === '') {
+      const ans = answers[i];
+      if (ans === undefined || ans === null || (typeof ans === 'string' && ans.trim() === '')) {
         missing.push(i + 1); // 1-based question number for candidate feedback
       }
     }
@@ -231,7 +232,7 @@ const Validator = {
 
   /**
    * Calculates Examination Score and Review Details
-   * @param {Object.<number, number>} userAnswers - Map of question index to selected option index
+   * @param {Object.<number, any>} userAnswers - Map of question index to selected option index
    * @param {Array<{ id: number, question: string, options: string[], correctOption: number, explanation: string }>} questions
    * @returns {{ totalQuestions: number, answeredCount: number, correctCount: number, incorrectCount: number, scorePercentage: number, isPassed: boolean, review: Array }}
    */
@@ -254,7 +255,7 @@ const Validator = {
 
     const review = questions.map((q, index) => {
       const selectedOption = userAnswers && userAnswers[index] !== undefined ? userAnswers[index] : null;
-      const hasAnswered = selectedOption !== null && selectedOption !== '';
+      const hasAnswered = selectedOption !== null && !(typeof selectedOption === 'string' && selectedOption.trim() === '');
       if (hasAnswered) answeredCount++;
 
       const isCorrect = hasAnswered && selectedOption === q.correctOption;

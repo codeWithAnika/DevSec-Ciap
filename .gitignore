@@ -44,3 +44,9 @@ coverage/
 .nyc_output/
 *.tmp
 *~
+
+# DevSecOps generated analysis files
+.scannerwork/
+examflow-*.tar
+html.tpl
+report.html
