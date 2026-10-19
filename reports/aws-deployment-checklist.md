@@ -16,14 +16,14 @@
 | Phase | Description | Status | Evidence & Verification Reference |
 |---|---|:---:|---|
 | **Phase A** | Environment & Baseline Inspection | **COMPLETED** | Git HEAD matches `origin/main` at `4018cdd`. Clean working tree. Docker containers running on ports 8080, 8081, 9000. |
-| **Phase B** | Local Tooling & AWS CLI Diagnosis | **IN PROGRESS (Action Needed)** | AWS CLI v2.37.4 verified with `aws login` support. Terraform v1.16.6 installed and verified via winget. Awaiting browser `aws login`. |
+| **Phase B** | Local Tooling & AWS CLI Diagnosis | **COMPLETED** | AWS CLI v2.37.4 verified. Identity `arn:aws:iam::494118670361:user/yatin-cli` authenticated in `ap-south-1`. EC2 dry-run write verified. |
 | **Phase C** | Application Validation & Unit Tests | **COMPLETED** | 41/41 unit tests passed across 6 test suites (`npm test` in 265ms). Local HTTP probes return 200 OK for HTML and JS assets. |
 | **Phase D** | Trivy Container Security Gate | **COMPLETED** | Clean Trivy scans: 0 vulnerabilities across 71 Alpine packages (`reports/trivy-devsec-online-exam-1.2.json`, `reports/trivy-examflow-6.json`). |
 | **Phase E** | SonarQube SAST Analysis | **DOCUMENTED** | SonarQube Community 26.10.0 live on 127.0.0.1:9000. Project `ExamFlow` configured with 100% test coverage and 0 security hotspots. |
 | **Phase F** | Jenkins CI/CD Automation | **COMPLETED** | Jenkins Build #6 verified SUCCESS (54s). Pipeline automatically checks out Git, tests, builds Docker image, executes Trivy, and archives JUnit reports. |
-| **Phase G** | Amazon ECR Image Registry | **PENDING AWS AUTH** | Code configured in `terraform/main.tf` (`aws_ecr_repository.app`). ECR docker login and image push commands prepared. |
-| **Phase H** | Terraform Ubuntu EC2 IaC | **COMPLETED (Validated)** | Terraform configuration formatted (`fmt -check`), initialized (`v5.100.0` AWS provider), and validated (`terraform validate` returned SUCCESS). Port updated to `8080`. |
-| **Phase I** | Live EC2 Cloud Deployment | **PAUSED (Rule 11 Checkpoint)** | Awaiting student AWS authorization and explicit deployment approval before running `terraform plan` / `terraform apply`. |
+| **Phase G** | Amazon ECR Image Registry | **PENDING PERMISSIONS** | ECR repository does not yet exist. `yatin-cli` currently lacks `ecr:DescribeRepositories` and `ecr:GetAuthorizationToken`. Needs policy update in console. |
+| **Phase H** | Terraform Ubuntu EC2 IaC | **COMPLETED (Plan Ready)** | `terraform fmt -check`, `validate`, and `plan -out=tfplan` succeeded (**8 to add, 0 to change, 0 to destroy**). Port 8080 configured. |
+| **Phase I** | Live EC2 Cloud Deployment | **PAUSED (Awaiting Approval)** | Stopped before `terraform apply`. Awaiting explicit user approval and ECR/IAM permission enablement. |
 | **Phase J** | Academic Documentation & Reports | **COMPLETED / UPDATED** | Final submission report, checklist, Jenkins evidence, and deployment procedures documented in `reports/`. |
 | **Phase K** | Git Repository Synchronization | **COMPLETED** | Local HEAD and `origin/main` synchronized. No uncommitted secrets or credentials. |
 | **Phase L** | Cost Control & Deprovisioning Plan | **READY** | Estimated runtime cost: ~$0.01 for 2 hours (t3.micro). Automated `terraform destroy` cleanup plan prepared. |
