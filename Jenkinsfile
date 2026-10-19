@@ -36,7 +36,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t devsec-online-exam:1.2 -t examflow:${BUILD_NUMBER} -t examflow:ci .'
+                sh 'docker build --no-cache -t devsec-online-exam:1.2 -t examflow:${BUILD_NUMBER} -t examflow:ci .'
             }
         }
 
