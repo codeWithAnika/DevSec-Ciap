@@ -3,18 +3,18 @@
   "Trivy": {
     "Version": "0.76.0"
   },
-  "ReportID": "01a14ae2-f955-7c7b-9520-9462a640ccd4",
-  "CreatedAt": "2026-10-17T17:22:31.381821437Z",
-  "ArtifactID": "sha256:41e249eae209f4be8490b9a4f7482e0604d1e57f8988fa810547e571be1813e7",
+  "ReportID": "01a15586-1f4e-707b-8dd8-a25fb301b6b2",
+  "CreatedAt": "2026-10-19T18:56:55.630043638Z",
+  "ArtifactID": "sha256:2af617f45d088147b887d3f48c39bb26f322e5ee2320ad51717f49c25ce0b314",
   "ArtifactName": "devsec-online-exam:1.2",
   "ArtifactType": "container_image",
   "Metadata": {
-    "Size": 70217216,
+    "Size": 75877376,
     "OS": {
       "Family": "alpine",
       "Name": "3.24.2"
     },
-    "ImageID": "sha256:31cf4820cbed81b11bc7797bb17b5298f4646bb312b0881e51f640f536d856e2",
+    "ImageID": "sha256:38fbd97fecdf09720d79d7e4e415105f8d11841e9298acda3f93a5bf9aa475a0",
     "DiffIDs": [
       "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711",
       "sha256:cfdd095735fdd5446c20bc2ed8519335912cbfea5190f03796c6625be4b4dbc2",
@@ -24,20 +24,20 @@
       "sha256:cb09ecf501197401f91f8f412df01b82dc9bc01dbe4517014e3acb37bf1579b4",
       "sha256:3c892ead291ba3249de1788eab3106b0a22a1d5825c576a521461ef892f8330c",
       "sha256:46c425251b664c2839df5a5d8e2de90f2b86487148a95e365a6101753a3a0407",
-      "sha256:5934159d8b92cd329fbe59e43b3e3b3026961434db2f08afa742f5dd57297047",
-      "sha256:b0fed7dd52ce441f302096b9e188ce1de636c60f8a0538beb72255ceb63d2241",
+      "sha256:ecce8b5b61d80c6f0beae001a800b9888e04d5324bae7aff0cabf8248f33d798",
+      "sha256:c3b2e6ec36f15662c85151d49c4d8329789db646b9ed5d95d7e4e302cb0f4750",
       "sha256:e6ef8e7ba278a92ed77bf554a24bcffdadbddab3227116bda044deb686567d4f"
     ],
     "RepoTags": [
       "devsec-online-exam:1.2"
     ],
     "RepoDigests": [
-      "devsec-online-exam@sha256:31cf4820cbed81b11bc7797bb17b5298f4646bb312b0881e51f640f536d856e2"
+      "devsec-online-exam@sha256:38fbd97fecdf09720d79d7e4e415105f8d11841e9298acda3f93a5bf9aa475a0"
     ],
     "Reference": "devsec-online-exam:1.2",
     "ImageConfig": {
       "architecture": "amd64",
-      "created": "2026-10-17T16:51:41.839497711Z",
+      "created": "2026-10-19T18:56:01.827383988Z",
       "history": [
         {
           "created": "2026-09-17T20:37:20Z",
@@ -152,40 +152,40 @@
           "comment": "buildkit.dockerfile.v0"
         },
         {
-          "created": "2026-10-17T16:51:41Z",
-          "created_by": "RUN /bin/sh -c apk upgrade --no-cache || true # buildkit",
+          "created": "2026-10-19T18:56:01Z",
+          "created_by": "RUN /bin/sh -c apk update \u0026\u0026 apk upgrade --no-cache # buildkit",
           "comment": "buildkit.dockerfile.v0"
         },
         {
-          "created": "2026-10-17T16:51:41Z",
+          "created": "2026-10-19T18:56:01Z",
           "created_by": "LABEL name=ExamFlow version=1.2.0 description=ExamFlow Online Examination Platform",
           "comment": "buildkit.dockerfile.v0",
           "empty_layer": true
         },
         {
-          "created": "2026-10-17T16:51:41Z",
+          "created": "2026-10-19T18:56:01Z",
           "created_by": "RUN /bin/sh -c rm -rf /usr/share/nginx/html/* # buildkit",
           "comment": "buildkit.dockerfile.v0"
         },
         {
-          "created": "2026-10-17T16:51:41Z",
+          "created": "2026-10-19T18:56:01Z",
           "created_by": "COPY src/ /usr/share/nginx/html/ # buildkit",
           "comment": "buildkit.dockerfile.v0"
         },
         {
-          "created": "2026-10-17T16:51:41Z",
+          "created": "2026-10-19T18:56:01Z",
           "created_by": "EXPOSE [80/tcp]",
           "comment": "buildkit.dockerfile.v0",
           "empty_layer": true
         },
         {
-          "created": "2026-10-17T16:51:41Z",
+          "created": "2026-10-19T18:56:01Z",
           "created_by": "HEALTHCHECK {Test:[CMD-SHELL wget --quiet --tries=1 --spider http://localhost:80/ || exit 1] Interval:30s Timeout:5s StartPeriod:5s StartInterval:0s Retries:3}",
           "comment": "buildkit.dockerfile.v0",
           "empty_layer": true
         },
         {
-          "created": "2026-10-17T16:51:41Z",
+          "created": "2026-10-19T18:56:01Z",
           "created_by": "CMD [\"nginx\" \"-g\" \"daemon off;\"]",
           "comment": "buildkit.dockerfile.v0",
           "empty_layer": true
@@ -203,8 +203,8 @@
           "sha256:cb09ecf501197401f91f8f412df01b82dc9bc01dbe4517014e3acb37bf1579b4",
           "sha256:3c892ead291ba3249de1788eab3106b0a22a1d5825c576a521461ef892f8330c",
           "sha256:46c425251b664c2839df5a5d8e2de90f2b86487148a95e365a6101753a3a0407",
-          "sha256:5934159d8b92cd329fbe59e43b3e3b3026961434db2f08afa742f5dd57297047",
-          "sha256:b0fed7dd52ce441f302096b9e188ce1de636c60f8a0538beb72255ceb63d2241",
+          "sha256:ecce8b5b61d80c6f0beae001a800b9888e04d5324bae7aff0cabf8248f33d798",
+          "sha256:c3b2e6ec36f15662c85151d49c4d8329789db646b9ed5d95d7e4e302cb0f4750",
           "sha256:e6ef8e7ba278a92ed77bf554a24bcffdadbddab3227116bda044deb686567d4f"
         ]
       },
@@ -292,14 +292,14 @@
         "DiffID": "sha256:46c425251b664c2839df5a5d8e2de90f2b86487148a95e365a6101753a3a0407"
       },
       {
-        "Size": 377856,
-        "Digest": "sha256:00fa116aedb036c18c4c64c55cc0731fb369c250424c387008055ffbd43bbfda",
-        "DiffID": "sha256:5934159d8b92cd329fbe59e43b3e3b3026961434db2f08afa742f5dd57297047"
+        "Size": 6038016,
+        "Digest": "sha256:b0bd8db30697a98bbd78cdd4d4aeab2660b9ed654b099009ec4e4eaf1527c4cc",
+        "DiffID": "sha256:ecce8b5b61d80c6f0beae001a800b9888e04d5324bae7aff0cabf8248f33d798"
       },
       {
         "Size": 4096,
-        "Digest": "sha256:139bb02f4f2f527f9ce1ba59f6575f03228955875fc1d12e9db857f11c419f26",
-        "DiffID": "sha256:b0fed7dd52ce441f302096b9e188ce1de636c60f8a0538beb72255ceb63d2241"
+        "Digest": "sha256:e425fe9d7ee7bc4e6eea9461e36d8d79eb006d10614276bd3f52613f8ef86448",
+        "DiffID": "sha256:c3b2e6ec36f15662c85151d49c4d8329789db646b9ed5d95d7e4e302cb0f4750"
       },
       {
         "Size": 76800,
@@ -1375,8 +1375,8 @@
             "musl@1.2.6-r2"
           ],
           "Layer": {
-            "Digest": "sha256:00fa116aedb036c18c4c64c55cc0731fb369c250424c387008055ffbd43bbfda",
-            "DiffID": "sha256:5934159d8b92cd329fbe59e43b3e3b3026961434db2f08afa742f5dd57297047"
+            "Digest": "sha256:b0bd8db30697a98bbd78cdd4d4aeab2660b9ed654b099009ec4e4eaf1527c4cc",
+            "DiffID": "sha256:ecce8b5b61d80c6f0beae001a800b9888e04d5324bae7aff0cabf8248f33d798"
           },
           "Digest": "sha1:b6e82faa7913a63da771bbddaa6ad38842047f78",
           "InstalledFiles": [
@@ -1419,7 +1419,7 @@
           "Name": "libgd",
           "Identifier": {
             "PURL": "pkg:apk/alpine/libgd@2.3.3-r10?arch=x86_64\u0026distro=3.24.2",
-            "UID": "6ec86bb0ef1119c5"
+            "UID": "aafbd4f955e2f0fa"
           },
           "Version": "2.3.3-r10",
           "Arch": "x86_64",
@@ -1436,7 +1436,7 @@
             "libjpeg-turbo@3.1.3-r0",
             "libpng@1.6.59-r0",
             "libwebp@1.6.0-r0",
-            "libxpm@3.5.19-r0",
+            "libxpm@3.5.20-r0",
             "musl@1.2.6-r2",
             "tiff@4.7.2-r0",
             "zlib@1.3.2-r1"
@@ -1907,16 +1907,16 @@
           "AnalyzedBy": "apk"
         },
         {
-          "ID": "libx11@1.8.13-r0",
+          "ID": "libx11@1.8.14-r0",
           "Name": "libx11",
           "Identifier": {
-            "PURL": "pkg:apk/alpine/libx11@1.8.13-r0?arch=x86_64\u0026distro=3.24.2",
-            "UID": "f1e6fa6303e0c19a"
+            "PURL": "pkg:apk/alpine/libx11@1.8.14-r0?arch=x86_64\u0026distro=3.24.2",
+            "UID": "26d957cae69aa0e1"
           },
-          "Version": "1.8.13-r0",
+          "Version": "1.8.14-r0",
           "Arch": "x86_64",
           "SrcName": "libx11",
-          "SrcVersion": "1.8.13-r0",
+          "SrcVersion": "1.8.14-r0",
           "Licenses": [
             "X-11"
           ],
@@ -1926,10 +1926,10 @@
             "musl@1.2.6-r2"
           ],
           "Layer": {
-            "Digest": "sha256:28929cdf5be0fd764b759a1469570a6ca74c1eb000707f43dd8dc2d68657e8d0",
-            "DiffID": "sha256:46c425251b664c2839df5a5d8e2de90f2b86487148a95e365a6101753a3a0407"
+            "Digest": "sha256:b0bd8db30697a98bbd78cdd4d4aeab2660b9ed654b099009ec4e4eaf1527c4cc",
+            "DiffID": "sha256:ecce8b5b61d80c6f0beae001a800b9888e04d5324bae7aff0cabf8248f33d798"
           },
-          "Digest": "sha1:2ddc8d17b3bb9a45ed5cab78dd3bc84d78fca2d0",
+          "Digest": "sha1:903bb9991efb9e31ebd48e7382337f853ea9e101",
           "InstalledFiles": [
             "usr/lib/libX11-xcb.so.1",
             "usr/lib/libX11-xcb.so.1.0.0",
@@ -2272,7 +2272,7 @@
           "Name": "libxext",
           "Identifier": {
             "PURL": "pkg:apk/alpine/libxext@1.3.7-r0?arch=x86_64\u0026distro=3.24.2",
-            "UID": "78de13d1e27a389e"
+            "UID": "941dc0469b02c758"
           },
           "Version": "1.3.7-r0",
           "Arch": "x86_64",
@@ -2283,7 +2283,7 @@
           ],
           "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
           "DependsOn": [
-            "libx11@1.8.13-r0",
+            "libx11@1.8.14-r0",
             "musl@1.2.6-r2"
           ],
           "Layer": {
@@ -2329,31 +2329,31 @@
           "AnalyzedBy": "apk"
         },
         {
-          "ID": "libxpm@3.5.19-r0",
+          "ID": "libxpm@3.5.20-r0",
           "Name": "libxpm",
           "Identifier": {
-            "PURL": "pkg:apk/alpine/libxpm@3.5.19-r0?arch=x86_64\u0026distro=3.24.2",
-            "UID": "50fb7bd80dd0a2d8"
+            "PURL": "pkg:apk/alpine/libxpm@3.5.20-r0?arch=x86_64\u0026distro=3.24.2",
+            "UID": "66e3f8f376696f1e"
           },
-          "Version": "3.5.19-r0",
+          "Version": "3.5.20-r0",
           "Arch": "x86_64",
           "SrcName": "libxpm",
-          "SrcVersion": "3.5.19-r0",
+          "SrcVersion": "3.5.20-r0",
           "Licenses": [
             "X-11"
           ],
           "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
           "DependsOn": [
-            "libx11@1.8.13-r0",
+            "libx11@1.8.14-r0",
             "libxext@1.3.7-r0",
             "libxt@1.3.1-r0",
             "musl@1.2.6-r2"
           ],
           "Layer": {
-            "Digest": "sha256:28929cdf5be0fd764b759a1469570a6ca74c1eb000707f43dd8dc2d68657e8d0",
-            "DiffID": "sha256:46c425251b664c2839df5a5d8e2de90f2b86487148a95e365a6101753a3a0407"
+            "Digest": "sha256:b0bd8db30697a98bbd78cdd4d4aeab2660b9ed654b099009ec4e4eaf1527c4cc",
+            "DiffID": "sha256:ecce8b5b61d80c6f0beae001a800b9888e04d5324bae7aff0cabf8248f33d798"
           },
-          "Digest": "sha1:e23fe1e88781430db347a67b34d965fbaef1b245",
+          "Digest": "sha1:f8a08a4f7d1e606d76959f9693fcb5d0c8d01445",
           "InstalledFiles": [
             "usr/bin/cxpm",
             "usr/bin/sxpm",
@@ -2400,7 +2400,7 @@
           "Name": "libxt",
           "Identifier": {
             "PURL": "pkg:apk/alpine/libxt@1.3.1-r0?arch=x86_64\u0026distro=3.24.2",
-            "UID": "118a3743720bc1c7"
+            "UID": "cb47f80418794a68"
           },
           "Version": "1.3.1-r0",
           "Arch": "x86_64",
@@ -2413,7 +2413,7 @@
           "DependsOn": [
             "libice@1.1.2-r0",
             "libsm@1.2.6-r0",
-            "libx11@1.8.13-r0",
+            "libx11@1.8.14-r0",
             "musl@1.2.6-r2"
           ],
           "Layer": {
@@ -3651,8 +3651,8 @@
             "musl@1.2.6-r2"
           ],
           "Layer": {
-            "Digest": "sha256:00fa116aedb036c18c4c64c55cc0731fb369c250424c387008055ffbd43bbfda",
-            "DiffID": "sha256:5934159d8b92cd329fbe59e43b3e3b3026961434db2f08afa742f5dd57297047"
+            "Digest": "sha256:b0bd8db30697a98bbd78cdd4d4aeab2660b9ed654b099009ec4e4eaf1527c4cc",
+            "DiffID": "sha256:ecce8b5b61d80c6f0beae001a800b9888e04d5324bae7aff0cabf8248f33d798"
           },
           "Digest": "sha1:4f525c8cc204f84b8b4ca40db3be389958f056c6",
           "InstalledFiles": [
