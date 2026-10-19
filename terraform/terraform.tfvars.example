@@ -1,0 +1,17 @@
+# ==============================================================================
+# ExamFlow DevSecOps Deployment - Example Terraform Variables
+# Copy this file to terraform.tfvars to customize your deployment.
+# NEVER commit terraform.tfvars containing sensitive data to version control.
+# ==============================================================================
+
+aws_region         = "ap-south-1"
+project_name       = "examflow"
+environment        = "devsecops-ciap"
+instance_type      = "t3.micro"
+app_port           = 80
+ecr_image_tag      = "1.2"
+enable_public_http = true
+
+# Optional: Restrict SSH to your specific public IP (e.g., "203.0.113.50/32").
+# If left null, SSH port 22 remains closed and AWS SSM Session Manager is used.
+ssh_allowed_cidr   = null

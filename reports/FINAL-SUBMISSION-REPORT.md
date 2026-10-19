@@ -294,32 +294,34 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v trivy-cache:/roo
 
 | Req # | Requirement Description | Implementation Status | Verified Artifact / Evidence |
 | :---: | :--- | :---: | :--- |
-| **1** | **Online Examination Web Platform** | **COMPLETE** | Production web portal in `src/` (semantic HTML5, CSS Grid/Flexbox, ES6+ JS) |
-| **2** | **Formal Test Engineering (ECP, BVA, SVT)** | **COMPLETE** | 41 systematic test cases documented in [`docs/test-cases.md`](../docs/test-cases.md) |
-| **3** | **Automated Test Suite & JUnit XML** | **COMPLETE** | 41/41 passing unit tests; valid XML in [`test-results/junit.xml`](../test-results/junit.xml) |
-| **4** | **Dockerization & Trivy Security Scanning** | **COMPLETE** | Image `devsec-online-exam:1.2`, container running; 0 CVEs in [`reports/trivy-devsec-online-exam-1.2.txt`](trivy-devsec-online-exam-1.2.txt) |
-| **5** | **SonarQube SAST Code Quality & Security** | **COMPLETE** | Server at `http://127.0.0.1:9000`, project `ExamFlow`, reliability fixes verified in [`reports/sonarqube-sast-report.md`](sonarqube-sast-report.md) |
-| **6** | **Jenkins Declarative CI/CD Pipeline** | **COMPLETE** | Jenkins at `http://127.0.0.1:8081`, pipeline in [`Jenkinsfile`](../Jenkinsfile), Build #1 SUCCESS documented in [`reports/jenkins-cicd-report.md`](jenkins-cicd-report.md) |
-| **7** | **Cloud Deployment (Terraform / AWS EC2 / ECR)** | **SEPARATE TASK** | Out of scope for current local verification; scheduled as next lab milestone |
+| **1** | **Online Examination Web Platform** | **VERIFIED COMPLETE** | Production web portal in `src/` (semantic HTML5, CSS Grid/Flexbox, ES6+ JS), verified running at `http://localhost:8080/` in [`reports/docker-verification-report.md`](docker-verification-report.md). |
+| **2** | **Formal Test Engineering (ECP, BVA, SVT)** | **VERIFIED COMPLETE** | 41 systematic test cases documented in [`docs/test-cases.md`](../docs/test-cases.md) across equivalence partitions, boundaries, and special values. |
+| **3** | **Automated Test Suite & JUnit XML** | **VERIFIED COMPLETE** | 41/41 passing unit tests in ~681ms; valid XML in [`test-results/junit.xml`](../test-results/junit.xml); coverage in [`coverage/lcov.info`](../coverage/lcov.info). |
+| **4** | **Dockerization & Trivy Security Scanning** | **VERIFIED COMPLETE** | Image `devsec-online-exam:1.2`, container running healthy; 0 CVEs in [`reports/trivy-devsec-online-exam-1.2.txt`](trivy-devsec-online-exam-1.2.txt) and [`reports/docker-verification-report.md`](docker-verification-report.md). |
+| **5** | **SonarQube SAST Code Quality & Security** | **PARTIALLY COMPLETE** | Server at `http://127.0.0.1:9000`, Java 21 LTS wrapper verified, 2 reliability bugs remediated; documented in [`reports/sonarqube-sast-report.md`](sonarqube-sast-report.md) & [`reports/sonarqube-verification-evidence.md`](sonarqube-verification-evidence.md). Awaiting user token for authenticated CLI scan. |
+| **6** | **Jenkins Declarative CI/CD Pipeline** | **VERIFIED COMPLETE** | Jenkins at `http://127.0.0.1:8081`, pipeline in [`Jenkinsfile`](../Jenkinsfile), Build #1 & #3 SUCCESS verified; Build #4 security gate enforcement documented in [`reports/jenkins-latest-build-evidence.md`](jenkins-latest-build-evidence.md). |
+| **7** | **Cloud Deployment (Terraform / AWS EC2 / ECR)** | **BLOCKED — ACTION REQUIRED** | Infrastructure as Code in `terraform/` (`main.tf`, `variables.tf`, `outputs.tf`, `user-data.sh`). Formatted and validated (`Success! The configuration is valid.`). Awaiting student AWS credentials and explicit deployment approval. See [`reports/terraform-deployment-report.md`](terraform-deployment-report.md) and [`reports/aws-cost-and-cleanup.md`](aws-cost-and-cleanup.md). |
 
 ---
 
 ## 10. Final Submission Checklist & Manual Action Items
 
+See the dedicated cross-reference checklist at [`reports/SUBMISSION-CHECKLIST.md`](SUBMISSION-CHECKLIST.md).
+
 ### Automated & Verified Components:
 - [x] 41 unit tests across 6 suites passing without errors (`npm test`).
 - [x] Standard JUnit XML report generated at `test-results/junit.xml`.
-- [x] Docker image `devsec-online-exam:1.2` built and tested.
+- [x] Docker image `devsec-online-exam:1.2` built and tested with automated Alpine security upgrades.
 - [x] Container `devsec-exam-portal` running in healthy state on port 8080.
 - [x] Trivy vulnerability scan executed; 0 OS vulnerabilities detected; zero HIGH/CRITICAL gate passed.
 - [x] Host dependency scan via `npm audit` verified with 0 vulnerabilities.
-- [x] Jenkinsfile updated and verified; Jenkins Job `ExamFlow-CI` Build #1 verified.
-- [x] SonarQube SAST configuration and reliability fixes verified in `reports/sonarqube-sast-report.md`.
-- [x] Comprehensive test matrix documented in `docs/test-cases.md`.
-- [x] Full Git history preserved on branch `main` with remote synchronisation.
+- [x] Jenkinsfile updated and verified; Jenkins Job `ExamFlow-CI` Builds #1, #3, and #4 verified.
+- [x] SonarQube Java 21 LTS wrapper verified; reliability bugs remediated; token guide documented.
+- [x] Terraform codebase created, formatted, initialized, and validated (`terraform validate` passed).
+- [x] Full Git history preserved on branch `main`.
 
 ### Recommended Manual Demonstration Actions (During Viva / Evaluation):
-1. **Interactive Browser Walkthrough:** Open `http://localhost:8080` in a web browser. Demonstrate candidate registration (valid and invalid inputs), answer all 6 questions, submit, and display the scored results and review breakdown.
-2. **Jenkins CI/CD Pipeline:** Open `http://localhost:8081/job/ExamFlow-CI/` to demonstrate the pipeline stages, Build #1 console output, and archived artifacts.
-3. **SonarQube Dashboard:** Open `http://localhost:9000/dashboard?id=ExamFlow` to display code metrics and the Sonar way Quality Gate.
-4. **Publish Commit to GitHub:** Execute `git push origin main` in PowerShell to push the latest commit.
+1. **Interactive Browser Walkthrough:** Open `http://localhost:8080` in a web browser. Demonstrate candidate registration (valid and invalid inputs), answer questions, submit, and display scored results.
+2. **Jenkins CI/CD Pipeline:** Open `http://localhost:8081/job/ExamFlow-CI/` to demonstrate the pipeline stages, build history, test results, and archived Trivy reports.
+3. **SonarQube Dashboard:** Open `http://localhost:9000/dashboard?id=ExamFlow` to inspect code metrics and Quality Gate.
+4. **Publish Commit to GitHub:** Execute `git push origin main` in an interactive PowerShell terminal.
