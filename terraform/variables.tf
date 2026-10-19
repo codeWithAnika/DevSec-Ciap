@@ -25,7 +25,7 @@ variable "instance_type" {
 variable "app_port" {
   description = "Host HTTP port on which the ExamFlow container will serve traffic"
   type        = number
-  default     = 80
+  default     = 8080
 }
 
 variable "ecr_image_tag" {
