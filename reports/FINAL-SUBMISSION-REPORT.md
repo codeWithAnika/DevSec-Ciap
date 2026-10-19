@@ -211,9 +211,10 @@ The declarative Jenkins pipeline automates the full verification lifecycle:
 **Verified Jenkins Execution Evidence:**
 - **Container / URL:** `examflow-jenkins` on `http://127.0.0.1:8081` (Jenkins 2.580.1)
 - **Job Name:** `ExamFlow-CI` ([http://127.0.0.1:8081/job/ExamFlow-CI/](http://127.0.0.1:8081/job/ExamFlow-CI/))
-- **Build #1 Result:** **SUCCESS** (Duration: 105s, 41/41 tests passing, Docker image built, 0 Trivy vulnerabilities, gate passed, artifacts archived).
-- **Build #3 Result:** **SUCCESS** (Latest run, Duration: 1m 55s, 41/41 tests passing, `devsec-online-exam:1.2` & `examflow:3` built, 0 Trivy vulnerabilities across 71 Alpine packages, Trivy gate exit code 0, artifacts archived: `trivy-examflow-3.*` and `junit.xml`).
-- **Detailed Audit Dossier:** See [`reports/jenkins-cicd-report.md`](jenkins-cicd-report.md).
+- **Build #1 & #3 Results:** **SUCCESS** (Initial baseline runs, 41/41 tests passing, Docker image built, 0 Trivy vulnerabilities, gate passed, artifacts archived).
+- **Build #4 Result:** **FAILURE (Gate Enforcement)** (Trivy detected newly published upstream `CVE-2026-88806` in `libx11-1.8.13-r0` and properly terminated the pipeline with exit code 1).
+- **Build #6 Result:** **SUCCESS** (Latest run, Duration: 54s, commit `f0dc0f2`, 41/41 tests passing, `examflow:6` built with `--no-cache`, 0 Trivy vulnerabilities across 71 Alpine packages with `libx11-1.8.14-r0`, Trivy gate exit code 0, artifacts archived: `trivy-examflow-6.*` and `junit.xml`).
+- **Detailed Audit Dossiers:** See [`reports/jenkins-cicd-report.md`](jenkins-cicd-report.md) and [`reports/jenkins-latest-build-evidence.md`](jenkins-latest-build-evidence.md).
 
 ### 6.2 SonarQube Integration (`sonar-project.properties`)
 SonarQube properties are established for static code quality analysis:

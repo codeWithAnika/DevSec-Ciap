@@ -121,58 +121,62 @@ Inspection of the Jenkins job [`ExamFlow-CI`](http://127.0.0.1:8081/job/ExamFlow
 
 | Build Number | Timestamp | Duration | Git Commit | Result | Test Outcome | Trivy Findings | Artifacts Archived |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Build #6** | 2026-10-19 19:07 UTC | 54s (54,057 ms) | `f0dc0f2` | **SUCCESS** | 41/41 Passed (0 fail, 0 skip) | 0 Vulnerabilities (71 pkgs) | `trivy-examflow-6.*`, `junit.xml` |
+| **Build #5** | 2026-10-19 19:06 UTC | 56s (56,231 ms) | `f0dc0f2` | **SUCCESS** | 41/41 Passed (0 fail, 0 skip) | 0 Vulnerabilities (71 pkgs) | `trivy-examflow-5.*`, `junit.xml` |
+| **Build #4** | 2026-10-19 18:32 UTC | 1m 09s (69,122 ms) | `dbbe3fd` | **FAILURE** | 41/41 Passed (0 fail, 0 skip) | 1 HIGH (CVE-2026-88806) | `trivy-examflow-4.*`, `junit.xml` |
 | **Build #3** | 2026-10-17 20:20 UTC | 1m 55s (115,804 ms) | `4066451` | **SUCCESS** | 41/41 Passed (0 fail, 0 skip) | 0 Vulnerabilities (71 pkgs) | `trivy-examflow-3.*`, `junit.xml` |
 | **Build #2** | 2026-10-17 20:12 UTC | 14s (14,489 ms) | `4066451` | **FAILURE** | N/A (Missing `node_modules`) | N/A | None (Clean workspace issue) |
 | **Build #1** | 2026-10-17 19:48 UTC | 1m 45s (105,023 ms) | `4066451` | **SUCCESS** | 41/41 Passed (0 fail, 0 skip) | 0 Vulnerabilities (71 pkgs) | `trivy-examflow-1.*`, `junit.xml` |
 
-> **Diagnostic Note on Build #2:** Build #2 failed because in an ephemeral/clean Jenkins workspace, `npm run test:junit` requires local development dependencies (such as `junit-report-builder`). We resolved this systematically by adding `npm ci --prefer-offline || npm install` directly into the Declarative `Jenkinsfile` under the `Environment & Dependencies` stage. Build #3 subsequently succeeded with full end-to-end automation.
+> **DevSecOps Policy Enforcement Note (Build #4):** Build #4 demonstrated the pipeline's security gate in action: Trivy detected a newly published upstream vulnerability in Alpine's `libx11` package and exited with code 1. We resolved this by updating `Dockerfile` (`RUN apk update && apk upgrade --no-cache`) and `Jenkinsfile` (`docker build --no-cache`). Builds #5 and #6 subsequently passed with 0 vulnerabilities.
 
-### 3.2 Latest Build Evidence (Build #3)
+### 3.2 Latest Build Evidence (Build #6)
 
 | Build Attribute | Recorded Evidence |
 | :--- | :--- |
 | **Job Name** | `ExamFlow-CI` |
-| **Build URL** | [http://127.0.0.1:8081/job/ExamFlow-CI/3/](http://127.0.0.1:8081/job/ExamFlow-CI/3/) |
-| **Build Number** | **Build #3** (Latest Verified Run) |
+| **Build URL** | [http://127.0.0.1:8081/job/ExamFlow-CI/6/](http://127.0.0.1:8081/job/ExamFlow-CI/6/) |
+| **Build Number** | **Build #6** (Latest Verified Run) |
 | **Result** | **SUCCESS** |
-| **Duration** | 1 minute 55 seconds (115,804 ms) |
-| **Trigger Mechanism** | System init script trigger |
+| **Duration** | 54 seconds (54,057 ms) |
+| **Git Commit** | `f0dc0f253eed231120d048c3c4572232ef04499b` (`origin/main`) |
 | **Workspace Path** | `/var/jenkins_home/workspace/ExamFlow-CI` |
 | **Test Results** | 41 Tests Executed (41 Passed, 0 Failed, 0 Skipped across 6 test suites) |
-| **Docker Build Result** | Successfully built and tagged `examflow:3` and `examflow:ci` |
-| **Trivy Findings** | 0 Vulnerabilities across 71 Alpine OS packages |
+| **Docker Build Result** | Successfully built and tagged `examflow:6`, `examflow:ci`, and `devsec-online-exam:1.2` |
+| **Trivy Findings** | 0 Vulnerabilities across 71 Alpine OS packages (`libx11-1.8.14-r0`) |
 | **Trivy Gate Outcome** | Exit Code 0 (0 HIGH, 0 CRITICAL) |
-| **Archived Artifacts** | `reports/trivy-examflow-3.json`, `reports/trivy-examflow-3.txt` |
+| **Archived Artifacts** | `reports/trivy-examflow-6.json`, `reports/trivy-examflow-6.txt` |
 | **Test XML Archive** | `/var/jenkins_home/workspace/ExamFlow-CI/test-results/junit.xml` |
 
-### Console Output Excerpt from Verified Build #3:
+### Console Output Excerpt from Verified Build #6:
 ```text
 [Pipeline] stage: Run Automated Tests
 + npm test
 # pass 41
 # fail 0
-# duration_ms 714.28
+# duration_ms 571.99
 + npm run test:junit
 [junit-report-builder] XML written to test-results/junit.xml
 
 [Pipeline] stage: Build Docker Image
-+ docker build -t devsec-online-exam:1.2 -t examflow:3 -t examflow:ci .
++ docker build --no-cache -t devsec-online-exam:1.2 -t examflow:6 -t examflow:ci .
+(2/4) Upgrading libx11 (1.8.13-r0 -> 1.8.14-r0)
 Successfully built b8e13c62379a
 Successfully tagged devsec-online-exam:1.2
-Successfully tagged examflow:3
+Successfully tagged examflow:6
 Successfully tagged examflow:ci
 
 [Pipeline] stage: Trivy Security Scan
-+ trivy image --format json --output reports/trivy-examflow-3.json examflow:3
-+ trivy image --format table --output reports/trivy-examflow-3.txt examflow:3
++ trivy image --format json --output reports/trivy-examflow-6.json examflow:6
++ trivy image --format table --output reports/trivy-examflow-6.txt examflow:6
 
 [Pipeline] stage: Enforce Vulnerability Threshold
-+ trivy image --exit-code 1 --severity HIGH,CRITICAL examflow:3
++ trivy image --exit-code 1 --severity HIGH,CRITICAL examflow:6
 Report Summary
 ┌────────────────────────────┬────────┬─────────────────┬─────────┐
 │           Target           │  Type  │ Vulnerabilities │ Secrets │
 ├────────────────────────────┼────────┼─────────────────┼─────────┤
-│ examflow:3 (alpine 3.24.2) │ alpine │        0        │    -    │
+│ examflow:6 (alpine 3.24.2) │ alpine │        0        │    -    │
 └────────────────────────────┴────────┴─────────────────┴─────────┘
 
 [Pipeline] archiveArtifacts
