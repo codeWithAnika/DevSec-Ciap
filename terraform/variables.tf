@@ -34,6 +34,12 @@ variable "ecr_image_tag" {
   default     = "1.2"
 }
 
+variable "authorized_ip_cidr" {
+  description = "Authorized IPv4 CIDR block for restricted administrative and evaluation access"
+  type        = string
+  default     = "49.43.24.82/32"
+}
+
 variable "ssh_allowed_cidr" {
   description = "Optional CIDR block allowed for SSH access. Set to null to rely solely on AWS SSM Session Manager (recommended)."
   type        = string
@@ -41,7 +47,7 @@ variable "ssh_allowed_cidr" {
 }
 
 variable "enable_public_http" {
-  description = "Whether to create a Security Group rule allowing HTTP ingress on app_port from 0.0.0.0/0 for verification"
+  description = "Whether to allow unrestricted HTTP access (0.0.0.0/0) on app_port. When false, HTTP access is restricted to authorized_ip_cidr."
   type        = bool
-  default     = true
+  default     = false
 }

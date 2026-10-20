@@ -8,10 +8,11 @@ aws_region         = "ap-south-1"
 project_name       = "examflow"
 environment        = "devsecops-ciap"
 instance_type      = "t3.micro"
-app_port           = 80
+app_port           = 8080
 ecr_image_tag      = "1.2"
-enable_public_http = true
+authorized_ip_cidr = "49.43.24.82/32"
+enable_public_http = false
 
-# Optional: Restrict SSH to your specific public IP (e.g., "203.0.113.50/32").
+# Optional: Restrict SSH to your specific public IP (e.g., "49.43.24.82/32").
 # If left null, SSH port 22 remains closed and AWS SSM Session Manager is used.
 ssh_allowed_cidr   = null

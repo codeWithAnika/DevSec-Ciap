@@ -23,6 +23,11 @@ output "application_url" {
   value       = "http://${aws_instance.web.public_ip}:${var.app_port}/"
 }
 
+output "authorized_ip_cidr" {
+  description = "Authorized IPv4 CIDR configured for restricted access"
+  value       = var.authorized_ip_cidr
+}
+
 output "aws_region" {
   description = "AWS region of deployment"
   value       = var.aws_region

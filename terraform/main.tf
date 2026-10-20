@@ -114,21 +114,19 @@ resource "aws_security_group" "app" {
   description = "Security group for ExamFlow web portal container instance"
   vpc_id      = data.aws_vpc.default.id
 
-  # Application HTTP Ingress
-  dynamic "ingress" {
-    for_each = var.enable_public_http ? [1] : []
-    content {
-      description = "HTTP access to ExamFlow web portal"
-      from_port   = var.app_port
-      to_port     = var.app_port
-      protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
+  # Application HTTP Ingress: restricted to authorized IP by default, or 0.0.0.0/0 if public access is enabled
+  ingress {
+    description = var.enable_public_http ? "Public HTTP access to ExamFlow web portal" : "ExamFlow HTTP access from authorized IP"
+    from_port   = var.app_port
+    to_port     = var.app_port
+    protocol    = "tcp"
+    cidr_blocks = var.enable_public_http ? ["0.0.0.0/0"] : [var.authorized_ip_cidr]
   }
 
   # Optional SSH Ingress (Restricted to explicit CIDR; AWS SSM is preferred)
   dynamic "ingress" {
     for_each = var.ssh_allowed_cidr != null ? [var.ssh_allowed_cidr] : []
+
     content {
       description = "Administrative SSH access restricted to authorized IP"
       from_port   = 22

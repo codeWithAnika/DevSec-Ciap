@@ -29,7 +29,7 @@
                                 |   |   Docker Engine                    |   |
                                 |   |   +----------------------------+   |   |
                                 |   |   | examflow-portal (Nginx)    |   |   |
-                                |   |   | Port 80:80                 |   |   |
+                                |   |   | Port 8080:80               |   |   |
                                 |   |   +----------------------------+   |   |
                                 |   |   - IMDSv2 Enforced            |   |   |
                                 |   |   - 20 GB gp3 Encrypted EBS    |   |   |
@@ -38,7 +38,7 @@
                                 |                     ^                      |
                                 +─────────────────────┼──────────────────────+
                                                       │
-[Student / Examiner Web Browser]                      │ 3. HTTP Port 80
+[Student / Examiner Web Browser]                      │ 3. HTTP Port 8080 (Restricted to Authorized IP)
 ──────────────────────────────────────────────────────┘
 ```
 
@@ -51,7 +51,7 @@
 | **Amazon ECR** | `aws_ecr_repository` | Private container registry with AES256 encryption, scan-on-push, and lifecycle policy (max 5 images). |
 | **EC2 Host** | `aws_instance` | Ubuntu 22.04 LTS running Docker, bootstrapped via cloud-init `user-data.sh`. |
 | **IAM Instance Role** | `aws_iam_role` | Grants least-privilege `AmazonEC2ContainerRegistryReadOnly` and `AmazonSSMManagedInstanceCore`. |
-| **Security Group** | `aws_security_group` | Allows inbound HTTP (port 80) for evaluation; denies SSH by default (SSM preferred). |
+| **Security Group** | `aws_security_group` | Restricts inbound HTTP (port 8080) to authorized IP (`49.43.24.82/32`) by default; denies SSH by default (SSM preferred). |
 | **EBS Storage** | `root_block_device` | 20 GB gp3 volume encrypted at rest. |
 
 ---
