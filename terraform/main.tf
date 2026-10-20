@@ -40,40 +40,7 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-# 1. IAM Role and Instance Profile for EC2 Host (Least-Privilege Security)
-resource "aws_iam_role" "ec2" {
-  name = "${var.project_name}-ec2-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect    = "Allow"
-        Principal = { Service = "ec2.amazonaws.com" }
-        Action    = "sts:AssumeRole"
-      }
-    ]
-  })
-}
-
-# Attach read-only ECR pull permission (least privilege)
-resource "aws_iam_role_policy_attachment" "ecr_readonly" {
-  role       = aws_iam_role.ec2.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-}
-
-# Attach AWS SSM Managed Core policy (secure terminal access via Session Manager without public SSH)
-resource "aws_iam_role_policy_attachment" "ssm_core" {
-  role       = aws_iam_role.ec2.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-}
-
-resource "aws_iam_instance_profile" "ec2" {
-  name = "${var.project_name}-ec2-profile"
-  role = aws_iam_role.ec2.name
-}
-
-# 2. Security Group for ExamFlow Web Server
+# 1. Security Group for ExamFlow Web Server
 resource "aws_security_group" "app" {
   name        = "${var.project_name}-web-sg"
   description = "Security group for ExamFlow web portal container instance"
@@ -88,7 +55,7 @@ resource "aws_security_group" "app" {
     cidr_blocks = var.enable_public_http ? ["0.0.0.0/0"] : [var.authorized_ip_cidr]
   }
 
-  # Optional SSH Ingress (Restricted to explicit CIDR; AWS SSM is preferred)
+  # Optional SSH Ingress (Restricted to explicit CIDR; disabled by default)
   dynamic "ingress" {
     for_each = var.ssh_allowed_cidr != null ? [var.ssh_allowed_cidr] : []
 
@@ -101,7 +68,7 @@ resource "aws_security_group" "app" {
     }
   }
 
-  # Outbound Egress (Required for apt updates, Docker Hub packages, and ECR pulls)
+  # Outbound Egress (Required for apt updates and Docker image pulls)
   egress {
     description = "Allow all outbound traffic for updates and image pulls"
     from_port   = 0
@@ -115,11 +82,11 @@ resource "aws_security_group" "app" {
   }
 }
 
-# 3. Ubuntu EC2 Instance Hosting the ExamFlow Docker Container
+# 2. Ubuntu EC2 Instance Hosting the ExamFlow Docker Container
+# Uses public ECR image directly without requiring IAM role or private ECR credentials
 resource "aws_instance" "web" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = var.instance_type
-  iam_instance_profile        = var.existing_iam_instance_profile != null ? var.existing_iam_instance_profile : aws_iam_instance_profile.ec2.name
   vpc_security_group_ids      = [aws_security_group.app.id]
   associate_public_ip_address = true
 
@@ -147,9 +114,4 @@ resource "aws_instance" "web" {
   tags = {
     Name = "${var.project_name}-web-host"
   }
-
-  depends_on = [
-    aws_iam_role_policy_attachment.ecr_readonly,
-    aws_iam_role_policy_attachment.ssm_core
-  ]
 }

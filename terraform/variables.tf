@@ -37,7 +37,7 @@ variable "public_image_repository" {
 variable "ecr_image_tag" {
   description = "Container image tag to pull from the public ECR repository and run on EC2"
   type        = string
-  default     = "1.0"
+  default     = "1.2"
 }
 
 variable "authorized_ip_cidr" {
@@ -47,7 +47,7 @@ variable "authorized_ip_cidr" {
 }
 
 variable "ssh_allowed_cidr" {
-  description = "Optional CIDR block allowed for SSH access. Set to null to rely solely on AWS SSM Session Manager (recommended)."
+  description = "Optional CIDR block allowed for SSH access. Set to null to keep SSH disabled (recommended)."
   type        = string
   default     = null
 }
@@ -56,10 +56,4 @@ variable "enable_public_http" {
   description = "Whether to allow unrestricted HTTP access (0.0.0.0/0) on app_port. When false, HTTP access is restricted to authorized_ip_cidr."
   type        = bool
   default     = false
-}
-
-variable "existing_iam_instance_profile" {
-  description = "Optional name of an existing IAM instance profile to attach to the EC2 instance, if IAM role creation is restricted"
-  type        = string
-  default     = null
 }

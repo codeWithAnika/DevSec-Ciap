@@ -4,19 +4,16 @@
 # NEVER commit terraform.tfvars containing sensitive data to version control.
 # ==============================================================================
 
-aws_region                    = "ap-south-1"
-project_name                  = "examflow"
-environment                   = "devsecops-ciap"
-instance_type                 = "t3.micro"
-app_port                      = 8080
-public_image_repository       = "public.ecr.aws/u2v8m6a3/examflow"
-ecr_image_tag                 = "1.0"
-authorized_ip_cidr            = "49.43.24.82/32"
-enable_public_http            = false
+aws_region              = "ap-south-1"
+project_name            = "examflow"
+environment             = "devsecops-ciap"
+instance_type           = "t3.micro"
+app_port                = 8080
+public_image_repository = "public.ecr.aws/u2v8m6a3/examflow"
+ecr_image_tag           = "1.2"
+authorized_ip_cidr      = "49.43.24.82/32"
+enable_public_http      = false
 
 # Optional: Restrict SSH to your specific public IP (e.g., "49.43.24.82/32").
-# If left null, SSH port 22 remains closed and AWS SSM Session Manager is used.
-ssh_allowed_cidr              = null
-
-# Optional: Existing IAM instance profile to attach if IAM role creation is restricted
-existing_iam_instance_profile = null
+# If left null, SSH port 22 remains closed.
+ssh_allowed_cidr        = null

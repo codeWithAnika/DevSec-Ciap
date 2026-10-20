@@ -14,8 +14,8 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
 apt-get upgrade -y -o Dpkg::Options::="--force-confold"
 
-# 2. Install prerequisites, Docker, and AWS CLI v2
-apt-get install -y ca-certificates curl gnupg lsb-release unzip
+# 2. Install prerequisites and Docker CE
+apt-get install -y ca-certificates curl gnupg lsb-release
 
 # Install official Docker CE repository
 install -m 0755 -d /etc/apt/keyrings
@@ -33,15 +33,6 @@ apt-get install -y docker-ce docker-ce-cli containerd.io
 systemctl enable docker
 systemctl start docker
 
-# Install AWS CLI v2 if not already present
-if ! command -v aws &> /dev/null; then
-  echo "Installing AWS CLI v2..."
-  curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
-  unzip -q /tmp/awscliv2.zip -d /tmp
-  /tmp/aws/install
-  rm -rf /tmp/aws /tmp/awscliv2.zip
-fi
-
 # 3. Resolve metadata and region via IMDSv2
 IMDS_TOKEN=$(curl -s -S -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
 AWS_REGION=$(curl -s -S -H "X-aws-ec2-metadata-token: $IMDS_TOKEN" "http://169.254.169.254/latest/meta-data/placement/region")
@@ -51,7 +42,7 @@ echo "Target Public ECR Repository: ${public_image_repository}"
 echo "Target Image Tag: ${image_tag}"
 echo "Host Port: ${app_port}"
 
-# 4. Pull and run the ExamFlow container from Amazon ECR Public (no authentication required)
+# 4. Pull and run the ExamFlow container from Amazon ECR Public (no credentials required)
 FULL_IMAGE="${public_image_repository}:${image_tag}"
 echo "Pulling public container image: $FULL_IMAGE"
 
