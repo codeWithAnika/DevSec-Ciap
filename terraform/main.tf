@@ -40,42 +40,7 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-# 1. Elastic Container Registry (ECR) for ExamFlow Docker Image
-resource "aws_ecr_repository" "app" {
-  name                 = "${var.project_name}-${var.environment}"
-  image_tag_mutability = "MUTABLE"
-
-  image_scanning_configuration {
-    scan_on_push = true
-  }
-
-  encryption_configuration {
-    encryption_type = "AES256"
-  }
-}
-
-resource "aws_ecr_lifecycle_policy" "cleanup" {
-  repository = aws_ecr_repository.app.name
-
-  policy = jsonencode({
-    rules = [
-      {
-        rulePriority = 1
-        description  = "Retain only the last 5 untagged/tagged deployment images to control storage costs"
-        selection = {
-          tagStatus   = "any"
-          countType   = "imageCountMoreThan"
-          countNumber = 5
-        }
-        action = {
-          type = "expire"
-        }
-      }
-    ]
-  })
-}
-
-# 2. IAM Role and Instance Profile for EC2 Host (Least-Privilege Security)
+# 1. IAM Role and Instance Profile for EC2 Host (Least-Privilege Security)
 resource "aws_iam_role" "ec2" {
   name = "${var.project_name}-ec2-role"
 
@@ -108,7 +73,7 @@ resource "aws_iam_instance_profile" "ec2" {
   role = aws_iam_role.ec2.name
 }
 
-# 3. Security Group for ExamFlow Web Server
+# 2. Security Group for ExamFlow Web Server
 resource "aws_security_group" "app" {
   name        = "${var.project_name}-web-sg"
   description = "Security group for ExamFlow web portal container instance"
@@ -150,11 +115,11 @@ resource "aws_security_group" "app" {
   }
 }
 
-# 4. Ubuntu EC2 Instance Hosting the ExamFlow Docker Container
+# 3. Ubuntu EC2 Instance Hosting the ExamFlow Docker Container
 resource "aws_instance" "web" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = var.instance_type
-  iam_instance_profile        = aws_iam_instance_profile.ec2.name
+  iam_instance_profile        = var.existing_iam_instance_profile != null ? var.existing_iam_instance_profile : aws_iam_instance_profile.ec2.name
   vpc_security_group_ids      = [aws_security_group.app.id]
   associate_public_ip_address = true
 
@@ -166,10 +131,9 @@ resource "aws_instance" "web" {
   }
 
   user_data = templatefile("${path.module}/scripts/user-data.sh", {
-    ecr_registry   = split("/", aws_ecr_repository.app.repository_url)[0]
-    ecr_repository = aws_ecr_repository.app.name
-    image_tag      = var.ecr_image_tag
-    app_port       = var.app_port
+    public_image_repository = var.public_image_repository
+    image_tag               = var.ecr_image_tag
+    app_port                = var.app_port
   })
 
   user_data_replace_on_change = true
@@ -185,7 +149,6 @@ resource "aws_instance" "web" {
   }
 
   depends_on = [
-    aws_ecr_repository.app,
     aws_iam_role_policy_attachment.ecr_readonly,
     aws_iam_role_policy_attachment.ssm_core
   ]

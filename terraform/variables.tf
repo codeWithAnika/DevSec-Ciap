@@ -28,10 +28,16 @@ variable "app_port" {
   default     = 8080
 }
 
-variable "ecr_image_tag" {
-  description = "Immutable ECR container image tag to pull and run on the EC2 host"
+variable "public_image_repository" {
+  description = "URI of the existing Amazon ECR Public repository hosting the ExamFlow container image"
   type        = string
-  default     = "1.2"
+  default     = "public.ecr.aws/u2v8m6a3/examflow"
+}
+
+variable "ecr_image_tag" {
+  description = "Container image tag to pull from the public ECR repository and run on EC2"
+  type        = string
+  default     = "1.0"
 }
 
 variable "authorized_ip_cidr" {
@@ -50,4 +56,10 @@ variable "enable_public_http" {
   description = "Whether to allow unrestricted HTTP access (0.0.0.0/0) on app_port. When false, HTTP access is restricted to authorized_ip_cidr."
   type        = bool
   default     = false
+}
+
+variable "existing_iam_instance_profile" {
+  description = "Optional name of an existing IAM instance profile to attach to the EC2 instance, if IAM role creation is restricted"
+  type        = string
+  default     = null
 }

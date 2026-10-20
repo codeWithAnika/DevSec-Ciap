@@ -47,36 +47,40 @@ IMDS_TOKEN=$(curl -s -S -X PUT "http://169.254.169.254/latest/api/token" -H "X-a
 AWS_REGION=$(curl -s -S -H "X-aws-ec2-metadata-token: $IMDS_TOKEN" "http://169.254.169.254/latest/meta-data/placement/region")
 
 echo "Detected AWS Region: $AWS_REGION"
-echo "Target ECR Registry: ${ecr_registry}"
-echo "Target ECR Repository: ${ecr_repository}"
+echo "Target Public ECR Repository: ${public_image_repository}"
 echo "Target Image Tag: ${image_tag}"
 echo "Host Port: ${app_port}"
 
-# 4. Authenticate Docker to ECR using IAM instance profile
-echo "Authenticating to ECR..."
-aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "${ecr_registry}"
+# 4. Pull and run the ExamFlow container from Amazon ECR Public (no authentication required)
+FULL_IMAGE="${public_image_repository}:${image_tag}"
+echo "Pulling public container image: $FULL_IMAGE"
 
-# 5. Pull and run the ExamFlow container
-FULL_IMAGE="${ecr_registry}/${ecr_repository}:${image_tag}"
-echo "Pulling image: $FULL_IMAGE"
-docker pull "$FULL_IMAGE"
+if ! docker pull "$FULL_IMAGE"; then
+  echo "ERROR: Failed to pull public container image $FULL_IMAGE." >&2
+  echo "Diagnostics: Check internet connectivity and ensure the repository and tag exist." >&2
+  exit 1
+fi
 
 echo "Stopping any existing container..."
 docker rm -f examflow-portal || true
 
-echo "Starting ExamFlow container..."
-docker run -d \
+echo "Starting ExamFlow container on port ${app_port}:80..."
+if ! docker run -d \
   --name examflow-portal \
   --restart unless-stopped \
   -p "${app_port}:80" \
-  "$FULL_IMAGE"
+  "$FULL_IMAGE"; then
+  echo "ERROR: Failed to start examflow-portal container with image $FULL_IMAGE." >&2
+  docker logs --tail 50 examflow-portal 2>/dev/null || true
+  exit 1
+fi
 
-# 6. Verify local loopback response
+# 5. Verify local loopback response
 sleep 3
 if curl -fsSL -o /dev/null "http://127.0.0.1:${app_port}/"; then
   echo "ExamFlow application container is healthy and responding with HTTP 200 on port ${app_port}!"
 else
-  echo "WARNING: Loopback health check did not return HTTP 200. Check docker logs."
+  echo "WARNING: Loopback health check did not return HTTP 200. Diagnostic container logs:"
   docker logs --tail 20 examflow-portal || true
 fi
 

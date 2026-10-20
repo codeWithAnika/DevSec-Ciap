@@ -1,11 +1,6 @@
-output "ecr_repository_url" {
-  description = "URL of the Amazon ECR repository"
-  value       = aws_ecr_repository.app.repository_url
-}
-
-output "ecr_registry_id" {
-  description = "The registry ID where the repository was created"
-  value       = aws_ecr_repository.app.registry_id
+output "public_image_uri" {
+  description = "Full URI of the Amazon ECR Public container image deployed to EC2"
+  value       = "${var.public_image_repository}:${var.ecr_image_tag}"
 }
 
 output "ec2_instance_id" {
