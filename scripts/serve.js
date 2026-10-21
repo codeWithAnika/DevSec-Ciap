@@ -20,32 +20,36 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon'
 };
 
-function createServer() {
-  return http.createServer((req, res) => {
-    let reqPath = req.url.split('?')[0];
-    if (reqPath === '/') reqPath = '/index.html';
+function handleRequest(req, res) {
+  let reqPath = req.url.split('?')[0];
+  if (reqPath === '/') reqPath = '/index.html';
 
-    const safePath = path.normalize(reqPath).replace(/^(\.\.[\/\\])+/, '');
-    const filePath = path.join(PUBLIC_DIR, safePath);
+  const safePath = path.normalize(reqPath).replace(/^(\.\.[\/\\])+/, '');
+  const filePath = path.join(PUBLIC_DIR, safePath);
 
-    fs.stat(filePath, (err, stats) => {
-      if (err || !stats.isFile()) {
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end('404 Not Found');
-        return;
-      }
+  fs.stat(filePath, (err, stats) => {
+    if (err || !stats.isFile()) {
+      res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+      res.end('404 Not Found');
+      return;
+    }
 
-      const ext = path.extname(filePath).toLowerCase();
-      const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+    const ext = path.extname(filePath).toLowerCase();
+    const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
-      res.writeHead(200, {
-        'Content-Type': contentType,
-        'Cache-Control': 'no-cache'
-      });
-
-      fs.createReadStream(filePath).pipe(res);
+    res.writeHead(200, {
+      'Content-Type': contentType,
+      'Cache-Control': 'no-cache',
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY'
     });
+
+    fs.createReadStream(filePath).pipe(res);
   });
+}
+
+function createServer() {
+  return http.createServer(handleRequest);
 }
 
 // Auto-run when executed directly (node scripts/serve.js)
@@ -57,4 +61,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { createServer };
+module.exports = { createServer, handleRequest, MIME_TYPES, PUBLIC_DIR };

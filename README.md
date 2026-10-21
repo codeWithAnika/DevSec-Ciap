@@ -39,12 +39,15 @@ This microproject develops a resilient, accessible Online Examination System pla
 ## 3. Technology Stack
 
 - **Frontend:** Semantic HTML5, Modern CSS3 (CSS Grid, Flexbox, Custom Properties), Vanilla JavaScript (ES6+).
-- **Web Server:** Nginx Stable Alpine Linux (`nginx:stable-alpine`).
+- **Navigation Architecture:** 7 Views (Home Hero, Candidate Registration, Timed Instructions, Exam Workspace with Palette & Countdown Timer, Results Evaluation, Interactive Testing Lab, Project Architecture & About).
+- **Testing Lab Engine:** Interactive in-browser ECP & SVT test runner with real-time Input Classification Sandbox.
+- **Web Server:** Nginx Stable Alpine Linux (`nginx:stable-alpine`) / Node.js zero-dependency HTTP server (`scripts/serve.js`).
 - **Testing Engine:** Node.js v24 Built-in Test Runner (`node:test`, `node:assert/strict`).
 - **Reporting Engine:** `junit-report-builder` for Jenkins-compatible JUnit XML reports.
 - **Containerization:** Docker Engine / Docker Desktop on Windows.
 - **Vulnerability Scanner:** Aqua Security Trivy (`aquasec/trivy:latest`).
-- **CI/CD:** Jenkins (`Jenkinsfile`) & SonarQube.
+- **CI/CD:** Jenkins (`Jenkinsfile`) & SonarQube Community Build 26.10.
+- **Infrastructure as Code (IaC):** HashiCorp Terraform AWS EC2 deployment (`ap-south-1`).
 - **Version Control:** Git & GitHub (`main` branch).
 
 ---
@@ -168,7 +171,9 @@ The testing strategy is documented in full detail in [`docs/test-cases.md`](docs
 
 | Component | Status | Verification Evidence |
 | :--- | :--- | :--- |
-| **Static Web Application** | Verified | Complete ExamFlow application in `src/` |
+| **Complete 7-View Web Application** | Verified | Home, Register, Instructions, Exam, Results, Testing Lab, About in `src/` |
+| **Interactive Testing Lab** | Verified | In-browser live execution of 20 ECP and 21 SVT test cases + input playground |
+| **Assessment Workspace & Timer** | Verified | 10:00 active countdown timer, 6-pill question palette, confirmation modal |
 | **Input Validation & Scoring Engine** | Verified | Type-safe validator in `src/js/validator.js` |
 | **Question Bank & Explanations** | Verified | 6 DevSecOps and SDG 4 questions in `src/js/questions.js` |
 | **Automated Test Suite** | Verified | 41/41 unit tests passing (`npm test`) |
@@ -179,6 +184,7 @@ The testing strategy is documented in full detail in [`docs/test-cases.md`](docs
 | **HTTP Endpoint Delivery** | Verified | Responding `HTTP/1.1 200 OK` via `curl.exe -4 http://localhost:8080/` |
 | **Trivy Vulnerability Scan** | Verified | 0 vulnerabilities found; reports in `reports/` |
 | **CI/CD Pipeline Configuration** | Verified | `Jenkinsfile` configured with test, build, scan, and JUnit archive |
+| **Terraform IaC Configuration** | Verified | Validated AWS EC2 config (`terraform validate` passed, `terraform plan` clean) |
 | **Git Repository & Remote** | Verified | Branch `main` synchronized with `origin/main` |
 
 ---

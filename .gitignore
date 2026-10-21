@@ -69,3 +69,6 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 
+
+# Local submission documents
+/submission/
